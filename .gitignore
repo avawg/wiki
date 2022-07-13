@@ -1,0 +1,8 @@
+### IntelliJ IDEA ###
+.idea
+
+http/
+log/
+target/
+.mvn/
+wiki.iml
