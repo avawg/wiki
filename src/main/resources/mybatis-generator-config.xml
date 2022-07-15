@@ -10,12 +10,12 @@
         <property name="autoDelimitKeywords" value="true"/>
         <property name="beginningDelimiter" value="`"/>
         <property name="endingDelimiter" value="`"/>
-        
+
         <!--覆盖生成XML文件-->
-        <plugin type="org.mybatis.generator.plugins.UnmergeableXmlMappersPlugin" />
+        <!-- <plugin type="org.mybatis.generator.plugins.UnmergeableXmlMappersPlugin" /> -->
         <!-- 生成的实体类添加toString()方法 -->
         <plugin type="org.mybatis.generator.plugins.ToStringPlugin"/>
-        <!-- 不生成注释 -->
+        <!--不生成注释 -->
         <commentGenerator>
             <property name="suppressAllComments" value="true"/>
         </commentGenerator>
@@ -34,8 +34,12 @@
     
         <!-- mapper类的位置 -->
         <javaClientGenerator targetPackage="org.wg.wiki.mapper" targetProject="src/main/java" type="XMLMAPPER"/>
-        
-        <!--<table tableName="t_ebook"/>-->
-        <table tableName="t_category"/>
+
+        <table tableName="t_ebook">
+            <domainObjectRenamingRule searchString="^T" replaceString="" />
+        </table>
+        <table tableName="t_category">
+            <domainObjectRenamingRule searchString="^T" replaceString="" />
+        </table>
     </context>
 </generatorConfiguration>

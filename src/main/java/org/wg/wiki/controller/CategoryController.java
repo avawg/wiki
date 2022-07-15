@@ -24,12 +24,10 @@ public class CategoryController {
      * 查询图书，支持分页和模糊查询
      */
     @GetMapping("/list")
-    public Result<Page<Category>> list(@Valid CategoryQueryReq req) {
+    public Result list(@Valid CategoryQueryReq req) {
         // 返回前端的值有时不会和数据库一一对应，例如user password
         Page<Category> page = categoryService.list(req);
-        Result<Page<Category>> result = new Result<>();
-        result.setData(page);
-        return result;
+        return Result.success(page);
     }
 
     /**
@@ -40,8 +38,7 @@ public class CategoryController {
     public Result save(@RequestBody @Valid CategorySaveReq categoryReq) {
         Category category = copy(categoryReq, Category.class);
         categoryService.save(category);
-        Result result = new Result();
-        return result;
+        return Result.success();
     }
 
     /**
@@ -51,7 +48,6 @@ public class CategoryController {
     public Result delete(@PathVariable Long id) {
         System.out.println(id);
         categoryService.delete(id);
-        Result result = new Result();
-        return result;
+        return Result.success();
     }
 }

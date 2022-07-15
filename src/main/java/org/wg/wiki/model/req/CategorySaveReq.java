@@ -5,10 +5,10 @@ import javax.validation.constraints.NotNull;
 public class CategorySaveReq {
     private Long id;
 
-    private Long parent;
-
     @NotNull(message = "【名称】不能为空")
     private String name;
+
+    private Long parentId;
 
     @NotNull(message = "【排序】不能为空")
     private Integer sort;
@@ -21,20 +21,20 @@ public class CategorySaveReq {
         this.id = id;
     }
 
-    public Long getParent() {
-        return parent;
-    }
-
-    public void setParent(Long parent) {
-        this.parent = parent;
-    }
-
     public String getName() {
         return name;
     }
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Long getParentId() {
+        return parentId;
+    }
+
+    public void setParentId(Long parentId) {
+        this.parentId = parentId;
     }
 
     public Integer getSort() {
@@ -49,8 +49,8 @@ public class CategorySaveReq {
     public String toString() {
         return "CategorySaveReq{" +
                 "id=" + id +
-                ", parent=" + parent +
                 ", name='" + name + '\'' +
+                ", parentId=" + parentId +
                 ", sort=" + sort +
                 '}';
     }

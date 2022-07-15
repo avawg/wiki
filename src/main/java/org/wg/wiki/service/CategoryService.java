@@ -32,10 +32,7 @@ public class CategoryService {
         // 分页查询，对第一条sql起作用
         PageHelper.startPage(req.getPage(), req.getSize());
         List<Category> categorysList = categoryMapper.selectByExample(categoryExample);
-
         PageInfo<Category> pageInfo = new PageInfo<>(categorysList);
-        logger.info("总行数: {}", pageInfo.getTotal());
-        logger.info("总页数: {}", pageInfo.getPages());
 
         Page<Category> page = new Page<>();
         page.setTotal(pageInfo.getTotal());
