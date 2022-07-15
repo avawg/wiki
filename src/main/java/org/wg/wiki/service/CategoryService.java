@@ -27,6 +27,16 @@ public class CategoryService {
     @Autowired
     SnowFlake snowFlake;
 
+    /**
+     * 查询所有数据
+     */
+    public List<Category> all() {
+        CategoryExample categoryExample = new CategoryExample();
+        categoryExample.setOrderByClause("sort asc");
+        List<Category> list = categoryMapper.selectByExample(categoryExample);
+        return list;
+    }
+
     public Page<Category> list(CategoryQueryReq req) {
         CategoryExample categoryExample = new CategoryExample();
         // 分页查询，对第一条sql起作用

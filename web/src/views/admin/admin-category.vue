@@ -1,12 +1,9 @@
 <template>
   <a-layout>
     <a-layout-content :style="{ background: '#fff', padding: '24px', margin: 0, minHeight: '280px' }">
-      <a-form layout="inline" :model="param">
+      <a-form layout="inline">
         <a-form-item>
-          <a-input v-model:value="param.name" placeholder="名称"></a-input>
-        </a-form-item>
-        <a-form-item>
-          <a-button type="primary" @click="handleQuery({page: 1, size: pagination.pageSize})">
+          <a-button type="primary" @click="handleQuery()">
             查询
           </a-button>
         </a-form-item>
@@ -20,10 +17,9 @@
       <a-table
           :columns="columns"
           :row-key="record => record.id"
-          :data-source="categorys"
-          :pagination="pagination"
+          :data-source="level1"
           :loading="loading"
-          @change="handleTableChange"
+          :pagination="false"
       >
         <template v-slot:action="{ text, record }">
           <a-space size="small">
@@ -96,12 +92,9 @@ import {Tool} from "@/util/tool";
           slots: { customRender: 'action' }
         }
       ];
-      const categorys = ref();
-      const pagination = ref({
-        current: 1,
-        pageSize: 4,
-        total: 0
-      });
+      const level1 = ref(); // 一级目录
+      level1.value = [];
+
       const loading = ref(false);
       /**
        * 修改图书
@@ -127,44 +120,21 @@ import {Tool} from "@/util/tool";
           const data = response.data;
           if (data.success) {
             // 重新加载列表
-            handleQuery({
-              page: pagination.value.current,
-              size: pagination.value.pageSize
-            });
+            handleQuery();
           }
         });
       }
 
       /**
-       * 表格点击页码时触发
-       */
-      const handleTableChange = (pagination: any) => {
-        console.log("看看自带的分页参数都有啥：" + pagination);
-        handleQuery({
-          page: pagination.current,
-          size: pagination.pageSize
-        });
-      };
-
-      /**
        * 向后端查询数据
        */
-      const handleQuery = (params: any) => {
+      const handleQuery = () => {
         loading.value = true;
-        axios.get("/category/list", {
-          params: {
-            page: params.page,
-            size: params.size,
-            name: param.value.name // 没有值则不传递
-          }
-        }).then((response) => {
+        axios.get("/category/all").then((response) => {
           loading.value = false;
           const data = response.data;
           if (data.success) {
-            categorys.value = data.data.list;
-            // 重置分页按钮
-            pagination.value.current = params.page;
-            pagination.value.total = data.data.total;
+            level1.value = Tool.array2Tree(data.data, 0);
           } else {
             message.error(data.message);
           }
@@ -183,10 +153,7 @@ import {Tool} from "@/util/tool";
           if (data.success) {
             modalLoading.value = false;
             // 重新加载列表
-            handleQuery({
-              page: pagination.value.current,
-              size: pagination.value.pageSize
-            });
+            handleQuery();
           } else {
             message.error(data.message);
           }
@@ -194,27 +161,17 @@ import {Tool} from "@/util/tool";
       };
 
       onMounted(() => {
-        handleQuery({
-          page: 1,
-          size: pagination.value.pageSize
-        });
-      });
-
-      const param = ref({
-        name: null
+        handleQuery();
       });
 
       return {
         columns,
-        categorys,
-        pagination,
+        level1,
         loading,
         edit,
         add,
         del,
-        handleTableChange,
 
-        param,
         handleQuery,
 
         category,

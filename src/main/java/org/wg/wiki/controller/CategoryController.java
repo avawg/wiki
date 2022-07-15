@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
+import java.util.List;
+
 import static org.wg.wiki.utils.CopyUtil.copy;
 
 @RestController
@@ -19,6 +21,15 @@ public class CategoryController {
 
     @Autowired
     private CategoryService categoryService;
+
+    /**
+     * 查询图书，支持分页和模糊查询
+     */
+    @GetMapping("/all")
+    public Result all() {
+        List<Category> list = categoryService.all();
+        return Result.success(list);
+    }
 
     /**
      * 查询图书，支持分页和模糊查询
