@@ -74,7 +74,7 @@
       distinct
     </if>
     <include refid="Base_Column_List" />
-    from category
+    from t_category
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
     </if>
@@ -85,27 +85,27 @@
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
     select 
     <include refid="Base_Column_List" />
-    from category
+    from t_category
     where id = #{id,jdbcType=BIGINT}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
-    delete from category
+    delete from t_category
     where id = #{id,jdbcType=BIGINT}
   </delete>
   <delete id="deleteByExample" parameterType="org.wg.wiki.model.entity.CategoryExample">
-    delete from category
+    delete from t_category
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
     </if>
   </delete>
   <insert id="insert" parameterType="org.wg.wiki.model.entity.Category">
-    insert into category (id, parent, `name`, 
+    insert into t_category (id, parent, `name`, 
       sort)
     values (#{id,jdbcType=BIGINT}, #{parent,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, 
       #{sort,jdbcType=INTEGER})
   </insert>
   <insert id="insertSelective" parameterType="org.wg.wiki.model.entity.Category">
-    insert into category
+    insert into t_category
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="id != null">
         id,
@@ -136,13 +136,13 @@
     </trim>
   </insert>
   <select id="countByExample" parameterType="org.wg.wiki.model.entity.CategoryExample" resultType="java.lang.Long">
-    select count(*) from category
+    select count(*) from t_category
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
     </if>
   </select>
   <update id="updateByExampleSelective" parameterType="map">
-    update category
+    update t_category
     <set>
       <if test="record.id != null">
         id = #{record.id,jdbcType=BIGINT},
@@ -162,7 +162,7 @@
     </if>
   </update>
   <update id="updateByExample" parameterType="map">
-    update category
+    update t_category
     set id = #{record.id,jdbcType=BIGINT},
       parent = #{record.parent,jdbcType=BIGINT},
       `name` = #{record.name,jdbcType=VARCHAR},
@@ -172,7 +172,7 @@
     </if>
   </update>
   <update id="updateByPrimaryKeySelective" parameterType="org.wg.wiki.model.entity.Category">
-    update category
+    update t_category
     <set>
       <if test="parent != null">
         parent = #{parent,jdbcType=BIGINT},
@@ -187,7 +187,7 @@
     where id = #{id,jdbcType=BIGINT}
   </update>
   <update id="updateByPrimaryKey" parameterType="org.wg.wiki.model.entity.Category">
-    update category
+    update t_category
     set parent = #{parent,jdbcType=BIGINT},
       `name` = #{name,jdbcType=VARCHAR},
       sort = #{sort,jdbcType=INTEGER}

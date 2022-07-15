@@ -27,15 +27,15 @@
         </jdbcConnection>
         
         <!-- domain类的位置 -->
-        <javaModelGenerator targetPackage="com.wang.wiki.entity" targetProject="src/main/java" />
+        <javaModelGenerator targetPackage="org.wg.wiki.model.entity" targetProject="src/main/java" />
         
         <!-- mapper xml的位置 -->
         <sqlMapGenerator targetPackage="mapper" targetProject="src/main/resources" />
     
         <!-- mapper类的位置 -->
-        <javaClientGenerator targetPackage="org.wg.wiki.dao" targetProject="src/main/java" type="XMLMAPPER"/>
+        <javaClientGenerator targetPackage="org.wg.wiki.mapper" targetProject="src/main/java" type="XMLMAPPER"/>
         
-        <!--<table tableName="ebook"/>-->
-        <table tableName="category"/>
+        <!--<table tableName="t_ebook"/>-->
+        <table tableName="t_category"/>
     </context>
 </generatorConfiguration>

@@ -1,5 +1,7 @@
 package org.wg.wiki.controller;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.wg.wiki.model.entity.Ebook;
 import org.wg.wiki.model.req.EbookQueryReq;
 import org.wg.wiki.model.req.EbookSaveReq;
@@ -17,6 +19,8 @@ import static org.wg.wiki.utils.CopyUtil.copy;
 @RequestMapping("/ebook")
 public class EbookController {
 
+    private final Logger logger = LoggerFactory.getLogger(EbookController.class);
+
     @Autowired
     private EbookService ebookService;
 
@@ -24,12 +28,10 @@ public class EbookController {
      * 查询图书，支持分页和模糊查询
      */
     @GetMapping("/list")
-    public Result<Page<Ebook>> list(@Valid EbookQueryReq req) {
+    public Result list(@Valid EbookQueryReq req) {
         // 返回前端的值有时不会和数据库一一对应，例如user password
         Page<Ebook> page = ebookService.list(req);
-        Result<Page<Ebook>> result = new Result<>();
-        result.setData(page);
-        return result;
+        return Result.success(page);
     }
 
     /**
@@ -40,8 +42,7 @@ public class EbookController {
     public Result save(@RequestBody @Valid EbookSaveReq ebookReq) {
         Ebook ebook = copy(ebookReq, Ebook.class);
         ebookService.save(ebook);
-        Result result = new Result();
-        return result;
+        return Result.success();
     }
 
     /**
@@ -49,9 +50,8 @@ public class EbookController {
      */
     @DeleteMapping ("/delete/{id}")
     public Result delete(@PathVariable Long id) {
-        System.out.println(id);
+        logger.info("id: {}", id);
         ebookService.delete(id);
-        Result result = new Result();
-        return result;
+        return Result.success();
     }
 }

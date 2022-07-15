@@ -68,7 +68,7 @@ public class EbookService {
     /**
      * 删除图书
      */
-    public void delete(Long id) {
+    public void  delete(Long id) {
         ebookMapper.deleteByPrimaryKey(id);
     }
 }

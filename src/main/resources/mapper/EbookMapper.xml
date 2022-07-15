@@ -80,7 +80,7 @@
       distinct
     </if>
     <include refid="Base_Column_List" />
-    from ebook
+    from t_ebook
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
     </if>
@@ -91,21 +91,21 @@
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
     select 
     <include refid="Base_Column_List" />
-    from ebook
+    from t_ebook
     where id = #{id,jdbcType=BIGINT}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
-    delete from ebook
+    delete from t_ebook
     where id = #{id,jdbcType=BIGINT}
   </delete>
   <delete id="deleteByExample" parameterType="org.wg.wiki.model.entity.EbookExample">
-    delete from ebook
+    delete from t_ebook
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
     </if>
   </delete>
   <insert id="insert" parameterType="org.wg.wiki.model.entity.Ebook">
-    insert into ebook (id, `name`, category1_id, 
+    insert into t_ebook (id, `name`, category1_id, 
       category2_id, description, cover, 
       doc_count, view_count, vote_count
       )
@@ -115,7 +115,7 @@
       )
   </insert>
   <insert id="insertSelective" parameterType="org.wg.wiki.model.entity.Ebook">
-    insert into ebook
+    insert into t_ebook
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="id != null">
         id,
@@ -176,13 +176,13 @@
     </trim>
   </insert>
   <select id="countByExample" parameterType="org.wg.wiki.model.entity.EbookExample" resultType="java.lang.Long">
-    select count(*) from ebook
+    select count(*) from t_ebook
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
     </if>
   </select>
   <update id="updateByExampleSelective" parameterType="map">
-    update ebook
+    update t_ebook
     <set>
       <if test="record.id != null">
         id = #{record.id,jdbcType=BIGINT},
@@ -217,7 +217,7 @@
     </if>
   </update>
   <update id="updateByExample" parameterType="map">
-    update ebook
+    update t_ebook
     set id = #{record.id,jdbcType=BIGINT},
       `name` = #{record.name,jdbcType=VARCHAR},
       category1_id = #{record.category1Id,jdbcType=BIGINT},
@@ -232,7 +232,7 @@
     </if>
   </update>
   <update id="updateByPrimaryKeySelective" parameterType="org.wg.wiki.model.entity.Ebook">
-    update ebook
+    update t_ebook
     <set>
       <if test="name != null">
         `name` = #{name,jdbcType=VARCHAR},
@@ -262,7 +262,7 @@
     where id = #{id,jdbcType=BIGINT}
   </update>
   <update id="updateByPrimaryKey" parameterType="org.wg.wiki.model.entity.Ebook">
-    update ebook
+    update t_ebook
     set `name` = #{name,jdbcType=VARCHAR},
       category1_id = #{category1Id,jdbcType=BIGINT},
       category2_id = #{category2Id,jdbcType=BIGINT},

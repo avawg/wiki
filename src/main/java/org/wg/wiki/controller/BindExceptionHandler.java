@@ -1,4 +1,4 @@
-package org.wg.wiki.exception;
+package org.wg.wiki.controller;
 
 import org.wg.wiki.model.resp.Result;
 import org.slf4j.Logger;
@@ -22,9 +22,6 @@ public class BindExceptionHandler {
     public Result exceptionHandler(BindException e) {
         String message = e.getAllErrors().get(0).getDefaultMessage();
         logger.warn("参数校验失败: {}", message);
-        Result result = new Result();
-        result.setSuccess(false);
-        result.setMessage(message);
-        return result;
+        return Result.error(message);
     }
 }

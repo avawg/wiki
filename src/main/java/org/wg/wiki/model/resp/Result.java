@@ -8,7 +8,7 @@ public class Result<T> {
     /**
      * 状态
      */
-    private boolean success = true;
+    private boolean success;
 
     /**
      * error msg
@@ -19,6 +19,26 @@ public class Result<T> {
      * 业务数据
      */
     private T data;
+
+    public static Result success() {
+        Result result = new Result();
+        result.success = true;
+        return result;
+    }
+
+    public static Result success(Object object) {
+        Result result = new Result();
+        result.success = true;
+        result.data = object;
+        return result;
+    }
+
+    public static Result error(String message) {
+        Result result = new Result();
+        result.success = false;
+        result.message = message;
+        return result;
+    }
 
     public boolean getSuccess() {
         return success;
