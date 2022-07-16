@@ -26,8 +26,11 @@
       <a-layout-content
           :style="{ background: '#fff', padding: '24px', margin: 0, minHeight: '280px' }"
       >
+        <div class="welcome" v-show="showWelcome">
+          <h1>欢迎进入知识库</h1>
+        </div>
         <!-- 列表组件 -->
-        <a-list item-layout="vertical" size="large" :grid="{ gutter: 20, column: 3}" :data-source="ebooks">
+        <a-list v-show="!showWelcome" item-layout="vertical" size="large" :grid="{ gutter: 20, column: 3}" :data-source="ebooks">
           <template #renderItem="{ item }">
             <a-list-item key="item.name">
               <template #actions>
@@ -65,6 +68,8 @@
       const level1 = ref();
       let categorys: any;
 
+      const showWelcome = ref(true);
+
       const handleQueryCategory = () => {
         axios.get("/category/all").then((response) => {
           const data = response.data;
@@ -79,25 +84,38 @@
 
       onMounted(() => {
         handleQueryCategory();
+      });
+
+      let category2 = 0;
+
+      const handleClick = (value: any) => {
+        if (value.key === 'welcome') {
+          showWelcome.value = true;
+        } else {
+          showWelcome.value = false;
+          category2 = value.key;
+          handleQueryEbook();
+        }
+      }
+
+      const handleQueryEbook = () => {
         axios.get("/ebook/list", {
           params: {
             page: 1,
-            size: 1000
+            size: 1000,
+            category2Id: category2
           }
         }).then((response) => {
           const data = response.data;
           ebooks.value = data.data.list;
         });
-      });
-
-      const handleClick = () => {
-        console.log("menu click");
       }
 
       return {
         ebooks,
         level1,
         handleClick,
+        showWelcome,
         actions:  [
           { type: 'StarOutlined', text: '156' },
           { type: 'LikeOutlined', text: '156' },
