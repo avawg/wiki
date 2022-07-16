@@ -202,13 +202,15 @@ import {Tool} from "@/util/tool";
        * 查询所有分类
        **/
       const handleQueryCategory = () => {
-        loading.value = true;
         axios.get("/category/all").then((response) => {
-          loading.value = false;
           const data = response.data;
           if (data.success) {
             categorys = data.data;
             level1.value = Tool.array2Tree(data.data, 0);
+            handleQuery({
+              page: 1,
+              size: pagination.value.pageSize
+            });
           } else {
             message.error(data.message);
           }
@@ -256,10 +258,6 @@ import {Tool} from "@/util/tool";
 
       onMounted(() => {
         handleQueryCategory();
-        handleQuery({
-          page: 1,
-          size: pagination.value.pageSize
-        });
       });
 
       const param = ref({

@@ -1,6 +1,6 @@
 <template>
   <a-layout-footer style="text-align: center">
-    wiki ©2022 created by wg
+    wiki ©2022
   </a-layout-footer>
 </template>
 
