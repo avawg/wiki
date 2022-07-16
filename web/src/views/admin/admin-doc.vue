@@ -3,7 +3,7 @@
     <a-layout-content :style="{ background: '#fff', padding: '24px', margin: 0, minHeight: '280px' }">
       <a-form layout="inline">
         <a-form-item>
-          <a-button type="primary" @click="handleQuery()">
+          <a-button type="primary" @click="handleQueryDoc()">
             查询
           </a-button>
         </a-form-item>
@@ -53,18 +53,16 @@
           <a-input v-model:value="doc.name" />
         </a-form-item>
         <a-form-item label="父文档">
-          <a-input v-model:value="doc.parentId" />
-          <a-select
+          <a-tree-select
               v-model:value="doc.parentId"
-              ref="select"
+              style="width: 100%"
+              :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
+              :tree-data="treeSelectData"
+              placeholder="请选择父文档"
+              tree-default-expand-all
+              :replaceFields="{title: 'name', key: 'id', value: 'id'}"
           >
-            <a-select-option :value="0">
-              无
-            </a-select-option>
-            <a-select-option v-for="c in level1" :key="c.id" :value="c.id" :disabled="doc.id === c.id">
-              {{c.name}}
-            </a-select-option>
-          </a-select>
+          </a-tree-select>
         </a-form-item>
         <a-form-item label="顺序">
           <a-input v-model:value="doc.sort" />
@@ -103,43 +101,14 @@ export default defineComponent({
         slots: { customRender: 'action' }
       }
     ];
+    const loading = ref(false);
+
     const level1 = ref(); // 一级目录
     level1.value = [];
-
-    const loading = ref(false);
-    /**
-     * 修改图书
-     */
-    const edit = (record: any) => {
-      modalVisible.value = true;
-      doc.value = Tool.copy(record);
-    };
-    /**
-     * 添加图书
-     */
-    const add = () => {
-      modalVisible.value = true;
-      doc.value = {};
-    };
-    /**
-     * 删除图书
-     */
-    const del = (id: number) => {
-      loading.value = true;
-      axios.delete("/doc/delete/" + id).then((response) => {
-        loading.value = false;
-        const data = response.data;
-        if (data.success) {
-          // 重新加载列表
-          handleQuery();
-        }
-      });
-    }
-
     /**
      * 向后端查询数据
      */
-    const handleQuery = () => {
+    const handleQueryDoc = () => {
       loading.value = true;
       axios.get("/doc/all").then((response) => {
         loading.value = false;
@@ -152,8 +121,34 @@ export default defineComponent({
       });
     };
 
+    const treeSelectData = ref(); // 树形目录
+    treeSelectData.value = [];
+    /**
+     * 将某节点及其子孙节点全部置为disabled
+     */
+    const setDisable = (treeSelectData: any, id: any) => {
+      // 遍历数组，即遍历某一层节点
+      for (let i = 0; i < treeSelectData.length; i++) {
+        const children = treeSelectData[i].children;
+        if (treeSelectData[i].id === id) {
+          // 将目标节点设置为disabled
+          treeSelectData[i].disabled = true;
+          // 遍历所有子节点，将所有子节点全部都加上disabled
+          if (Tool.isNotEmpty(children)) {
+            for (let j = 0; j < children.length; j++) {
+              setDisable(children, children[j].id)
+            }
+          }
+        } else {
+          // 如果当前节点不是目标节点，则到其子节点再找找看。
+          if (Tool.isNotEmpty(children)) {
+            setDisable(children, id);
+          }
+        }
+      }
+    };
+
     // --- 表单信息 ---
-    const doc = ref({});
     const modalVisible = ref(false);
     const modalLoading = ref(false);
     const modalHandleOk = () => {
@@ -164,31 +159,68 @@ export default defineComponent({
         if (data.success) {
           modalLoading.value = false;
           // 重新加载列表
-          handleQuery();
+          handleQueryDoc();
         } else {
           message.error(data.message);
         }
       });
     };
 
+    const doc = ref({});
+    /**
+     * 修改文档
+     */
+    const edit = (record: any) => {
+      modalVisible.value = true;
+      doc.value = Tool.copy(record);
+      // 父文档不能选择当前节点及其子节点
+      treeSelectData.value = Tool.copy(level1.value);
+      setDisable(treeSelectData.value, record.id);
+      treeSelectData.value.unshift({"id": 0, "name": '无'});
+    };
+    /**
+     * 添加文档
+     */
+    const add = () => {
+      modalVisible.value = true;
+      doc.value = {};
+      treeSelectData.value = Tool.copy(level1.value);
+      treeSelectData.value.unshift({"id": 0, "name": '无'});
+    };
+    /**
+     * 删除文档
+     */
+    const del = (id: number) => {
+      loading.value = true;
+      axios.delete("/doc/delete/" + id).then((response) => {
+        loading.value = false;
+        const data = response.data;
+        if (data.success) {
+          // 重新加载列表
+          handleQueryDoc();
+        }
+      });
+    }
+
     onMounted(() => {
-      handleQuery();
+      handleQueryDoc();
     });
 
     return {
       columns,
-      level1,
       loading,
-      edit,
-      add,
-      del,
 
-      handleQuery,
+      level1,
+      handleQueryDoc,
+      treeSelectData,
 
-      doc,
       modalVisible,
       modalLoading,
       modalHandleOk,
+      doc,
+      edit,
+      add,
+      del,
     };
   }
 });

@@ -3,7 +3,7 @@
     <a-layout-content :style="{ background: '#fff', padding: '24px', margin: 0, minHeight: '280px' }">
       <a-form layout="inline">
         <a-form-item>
-          <a-button type="primary" @click="handleQuery()">
+          <a-button type="primary" @click="handleQueryCategory()">
             查询
           </a-button>
         </a-form-item>
@@ -13,6 +13,7 @@
           </a-button>
         </a-form-item>
       </a-form>
+
       <!-- 表格 -->
       <a-table
           :columns="columns"
@@ -103,43 +104,15 @@ import {Tool} from "@/util/tool";
           slots: { customRender: 'action' }
         }
       ];
+      const loading = ref(false);
+
       const level1 = ref(); // 一级目录
       level1.value = [];
-
-      const loading = ref(false);
-      /**
-       * 修改图书
-       */
-      const edit = (record: any) => {
-        modalVisible.value = true;
-        category.value = Tool.copy(record);
-      };
-      /**
-       * 添加图书
-       */
-      const add = () => {
-        modalVisible.value = true;
-        category.value = {};
-      };
-      /**
-       * 删除图书
-       */
-      const del = (id: number) => {
-        loading.value = true;
-        axios.delete("/category/delete/" + id).then((response) => {
-          loading.value = false;
-          const data = response.data;
-          if (data.success) {
-            // 重新加载列表
-            handleQuery();
-          }
-        });
-      }
 
       /**
        * 向后端查询数据
        */
-      const handleQuery = () => {
+      const handleQueryCategory = () => {
         loading.value = true;
         axios.get("/category/all").then((response) => {
           loading.value = false;
@@ -153,7 +126,6 @@ import {Tool} from "@/util/tool";
       };
 
       // --- 表单信息 ---
-      const category = ref({});
       const modalVisible = ref(false);
       const modalLoading = ref(false);
       const modalHandleOk = () => {
@@ -164,31 +136,61 @@ import {Tool} from "@/util/tool";
           if (data.success) {
             modalLoading.value = false;
             // 重新加载列表
-            handleQuery();
+            handleQueryCategory();
           } else {
             message.error(data.message);
           }
         });
       };
 
+      const category = ref({});
+      /**
+       * 修改分类
+       */
+      const edit = (record: any) => {
+        modalVisible.value = true;
+        category.value = Tool.copy(record);
+      };
+      /**
+       * 添加分类
+       */
+      const add = () => {
+        modalVisible.value = true;
+        category.value = {};
+      };
+      /**
+       * 删除分类
+       */
+      const del = (id: number) => {
+        loading.value = true;
+        axios.delete("/category/delete/" + id).then((response) => {
+          loading.value = false;
+          const data = response.data;
+          if (data.success) {
+            // 重新加载列表
+            handleQueryCategory();
+          }
+        });
+      }
+
       onMounted(() => {
-        handleQuery();
+        handleQueryCategory();
       });
 
       return {
         columns,
-        level1,
         loading,
-        edit,
-        add,
-        del,
+        level1,
+        handleQueryCategory,
 
-        handleQuery,
-
-        category,
         modalVisible,
         modalLoading,
         modalHandleOk,
+
+        category,
+        edit,
+        add,
+        del,
       };
     }
   });

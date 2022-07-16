@@ -51,7 +51,7 @@ public class CategoryService {
     }
 
     /**
-     * 保存目录
+     * 保存分类
      */
     public void save(Category category) {
         if (ObjectUtils.isEmpty(category.getId())) {
@@ -64,7 +64,7 @@ public class CategoryService {
     }
 
     /**
-     * 删除目录
+     * 删除分类
      */
     public void delete(Long id) {
         categoryMapper.deleteByPrimaryKey(id);

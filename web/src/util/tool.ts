@@ -38,7 +38,6 @@ export class Tool {
         for (let i = 0; i < array.length; i++) {
             if (Number(array[i].parentId) === Number(parentId)) {
                 result.push(array[i]);
-
                 // 递归查看当前节点对应的子节点
                 const children = Tool.array2Tree(array, array[i].id);
                 if (Tool.isNotEmpty(children)) {

@@ -23,7 +23,7 @@ public class CategoryController {
     private CategoryService categoryService;
 
     /**
-     * 查询所有目录
+     * 查询所有分类
      */
     @GetMapping("/all")
     public Result all() {
@@ -32,7 +32,7 @@ public class CategoryController {
     }
 
     /**
-     * 查询目录，支持分页和模糊查询
+     * 查询分类，支持分页和模糊查询
      */
     @GetMapping("/list")
     public Result list(@Valid CategoryQueryReq req) {
@@ -41,7 +41,7 @@ public class CategoryController {
     }
 
     /**
-     * 保存目录 新增或更新
+     * 保存分类 新增或更新
      */
     @PostMapping("/save")
     // RequestBody解析json post request请求参数
@@ -52,7 +52,7 @@ public class CategoryController {
     }
 
     /**
-     * 删除目录
+     * 删除分类
      */
     @DeleteMapping ("/delete/{id}")
     public Result delete(@PathVariable Long id) {

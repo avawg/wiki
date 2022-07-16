@@ -1,5 +1,6 @@
 <template>
     <a-layout>
+      <!-- 侧边栏 -->
       <a-layout-sider width="200" style="background: #fff">
         <a-menu
             mode="inline"
@@ -23,6 +24,7 @@
         </a-menu>
       </a-layout-sider>
 
+      <!-- 内容 -->
       <a-layout-content
           :style="{ background: '#fff', padding: '24px', margin: 0, minHeight: '280px' }"
       >
@@ -49,7 +51,6 @@
             </a-list-item>
           </template>
         </a-list>
-
       </a-layout-content>
     </a-layout>
 </template>
@@ -64,17 +65,12 @@
     name: 'Home',
 
     setup() {
-      const ebooks = ref();
+
       const level1 = ref();
-      let categorys: any;
-
-      const showWelcome = ref(true);
-
       const handleQueryCategory = () => {
         axios.get("/category/all").then((response) => {
           const data = response.data;
           if (data.success) {
-            categorys = data.data;
             level1.value = Tool.array2Tree(data.data, 0);
           } else {
             message.error(data.message);
@@ -82,22 +78,7 @@
         });
       };
 
-      onMounted(() => {
-        handleQueryCategory();
-      });
-
-      let category2Id = 0;
-
-      const handleClick = (value: any) => {
-        if (value.key === 'welcome') {
-          showWelcome.value = true;
-        } else {
-          showWelcome.value = false;
-          category2Id = value.key;
-          handleQueryEbook();
-        }
-      }
-
+      const ebooks = ref();
       const handleQueryEbook = () => {
         axios.get("/ebook/list", {
           params: {
@@ -111,11 +92,29 @@
         });
       }
 
+      let category2Id = 0;
+
+      const showWelcome = ref(true);
+      const handleClick = (value: any) => {
+        if (value.key === 'welcome') {
+          showWelcome.value = true;
+        } else {
+          showWelcome.value = false;
+          category2Id = value.key;
+          handleQueryEbook();
+        }
+      }
+
+      onMounted(() => {
+        handleQueryCategory();
+      });
+
       return {
-        ebooks,
-        level1,
-        handleClick,
         showWelcome,
+        handleClick,
+
+        level1,
+        ebooks,
         actions:  [
           { type: 'StarOutlined', text: '156' },
           { type: 'LikeOutlined', text: '156' },

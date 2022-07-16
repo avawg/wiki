@@ -71,7 +71,7 @@
         <a-form-item label="分类">
           <a-cascader
               v-model:value="categoryIds"
-              :field-names="{ label: 'name', value: 'id', children: 'children'}"
+              :field-names="{label: 'name', value: 'id', children: 'children'}"
               :options="level1"
           />
         </a-form-item>
@@ -131,51 +131,18 @@ import {Tool} from "@/util/tool";
         total: 0
       });
       const loading = ref(false);
-      /**
-       * 修改图书
-       */
-      const edit = (record: any) => {
-        modalVisible.value = true;
-        ebook.value = Tool.copy(record);
-        console.log(ebook.value);
-        categoryIds.value = [ebook.value.category1Id, ebook.value.category2Id]
-      };
-      /**
-       * 添加图书
-       */
-      const add = () => {
-        modalVisible.value = true;
-        ebook.value = {};
-      };
-      /**
-       * 删除图书
-       */
-      const del = (id: number) => {
-        loading.value = true;
-        axios.delete("/ebook/delete/" + id).then((response) => {
-          loading.value = false;
-          const data = response.data;
-          if (data.success) {
-            // 重新加载列表
-            handleQuery({
-              page: pagination.value.current,
-              size: pagination.value.pageSize
-            });
-          }
-        });
-      }
 
       /**
        * 表格点击页码时触发
        */
       const handleTableChange = (pagination: any) => {
-        console.log("看看自带的分页参数都有啥：" + pagination);
         handleQuery({
           page: pagination.current,
           size: pagination.pageSize
         });
       };
 
+      const param = ref({name: null});
       /**
        * 向后端查询数据
        */
@@ -201,8 +168,10 @@ import {Tool} from "@/util/tool";
         });
       };
 
+      let categorys: any;
+
       /**
-       * 查询所有分类
+       * 查询所有分类数据
        **/
       const handleQueryCategory = () => {
         axios.get("/category/all").then((response) => {
@@ -220,12 +189,10 @@ import {Tool} from "@/util/tool";
         });
       };
 
-      let categorys: any;
-
-      const getCategoryName = (cid: number) => {
+      const getCategoryName = (categoryId: number) => {
         let result = "";
         categorys.forEach((item: any) => {
-          if (item.id === cid) {
+          if (item.id === categoryId) {
             // return item.name; // 注意，这里直接return不起作用
             result = item.name;
           }
@@ -259,12 +226,41 @@ import {Tool} from "@/util/tool";
         });
       };
 
+      /**
+       * 修改图书
+       */
+      const edit = (record: any) => {
+        modalVisible.value = true;
+        ebook.value = Tool.copy(record);
+        categoryIds.value = [ebook.value.category1Id, ebook.value.category2Id]
+      };
+      /**
+       * 添加图书
+       */
+      const add = () => {
+        modalVisible.value = true;
+        ebook.value = {};
+      };
+      /**
+       * 删除图书
+       */
+      const del = (id: number) => {
+        loading.value = true;
+        axios.delete("/ebook/delete/" + id).then((response) => {
+          loading.value = false;
+          const data = response.data;
+          if (data.success) {
+            // 重新加载列表
+            handleQuery({
+              page: pagination.value.current,
+              size: pagination.value.pageSize
+            });
+          }
+        });
+      }
+
       onMounted(() => {
         handleQueryCategory();
-      });
-
-      const param = ref({
-        name: null
       });
 
       return {
@@ -272,22 +268,22 @@ import {Tool} from "@/util/tool";
         ebooks,
         pagination,
         loading,
-        edit,
-        add,
-        del,
         handleTableChange,
+
+        param,
+        handleQuery,
 
         categoryIds,
         level1,
         getCategoryName,
 
-        param,
-        handleQuery,
-
         ebook,
         modalVisible,
         modalLoading,
         modalHandleOk,
+        edit,
+        add,
+        del,
       };
     }
   });
