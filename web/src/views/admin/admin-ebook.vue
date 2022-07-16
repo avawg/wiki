@@ -33,6 +33,9 @@
         </template>
         <template v-slot:action="{ text, record }">
           <a-space size="small">
+            <a-button type="danger" >
+              <router-link to="/admin/doc">文档管理</router-link>
+            </a-button>
             <a-button type="primary" @click="edit(record)">
               编辑
             </a-button>
