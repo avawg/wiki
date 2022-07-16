@@ -86,14 +86,14 @@
         handleQueryCategory();
       });
 
-      let category2 = 0;
+      let category2Id = 0;
 
       const handleClick = (value: any) => {
         if (value.key === 'welcome') {
           showWelcome.value = true;
         } else {
           showWelcome.value = false;
-          category2 = value.key;
+          category2Id = value.key;
           handleQueryEbook();
         }
       }
@@ -103,7 +103,7 @@
           params: {
             page: 1,
             size: 1000,
-            category2Id: category2
+            category2Id: category2Id
           }
         }).then((response) => {
           const data = response.data;
