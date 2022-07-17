@@ -1,5 +1,7 @@
 package org.wg.wiki.controller;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.wg.wiki.model.entity.Doc;
 import org.wg.wiki.model.req.DocQueryReq;
 import org.wg.wiki.model.req.DocSaveReq;
@@ -11,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static org.wg.wiki.utils.CopyUtil.copy;
@@ -18,6 +21,8 @@ import static org.wg.wiki.utils.CopyUtil.copy;
 @RestController
 @RequestMapping("/doc")
 public class DocController {
+
+    private final Logger logger = LoggerFactory.getLogger(DocController.class);
 
     @Autowired
     private DocService docService;
@@ -54,10 +59,11 @@ public class DocController {
     /**
      * 删除文档
      */
-    @DeleteMapping ("/delete/{id}")
-    public Result delete(@PathVariable Long id) {
-        System.out.println(id);
-        docService.delete(id);
+    @DeleteMapping ("/delete/{ids}")
+    public Result delete(@PathVariable String ids) {
+        logger.info("ids: {}", ids);
+        List<String> list = Arrays.asList(ids.split(","));
+        docService.delete(list);
         return Result.success();
     }
 }

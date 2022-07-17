@@ -10,8 +10,6 @@ import org.springframework.util.ObjectUtils;
 import org.wg.wiki.mapper.DocMapper;
 import org.wg.wiki.model.entity.Doc;
 import org.wg.wiki.model.entity.DocExample;
-import org.wg.wiki.model.entity.Doc;
-import org.wg.wiki.model.entity.DocExample;
 import org.wg.wiki.model.req.DocQueryReq;
 import org.wg.wiki.model.resp.Page;
 import org.wg.wiki.utils.SnowFlake;
@@ -71,5 +69,15 @@ public class DocService {
      */
     public void delete(Long id) {
         docMapper.deleteByPrimaryKey(id);
+    }
+
+    /**
+     * 删除文档
+     */
+    public void delete(List<String> ids) {
+        DocExample docExample = new DocExample();
+        DocExample.Criteria criteria = docExample.createCriteria();
+        criteria.andIdIn(ids);
+        docMapper.deleteByExample(docExample);
     }
 }

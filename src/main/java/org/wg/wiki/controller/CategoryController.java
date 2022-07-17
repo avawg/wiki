@@ -1,5 +1,7 @@
 package org.wg.wiki.controller;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.wg.wiki.model.entity.Category;
 import org.wg.wiki.model.req.CategoryQueryReq;
 import org.wg.wiki.model.req.CategorySaveReq;
@@ -18,6 +20,8 @@ import static org.wg.wiki.utils.CopyUtil.copy;
 @RestController
 @RequestMapping("/category")
 public class CategoryController {
+
+    private final Logger logger = LoggerFactory.getLogger(CategoryController.class);
 
     @Autowired
     private CategoryService categoryService;
@@ -56,7 +60,7 @@ public class CategoryController {
      */
     @DeleteMapping ("/delete/{id}")
     public Result delete(@PathVariable Long id) {
-        System.out.println(id);
+        logger.info("id: {}", id);
         categoryService.delete(id);
         return Result.success();
     }

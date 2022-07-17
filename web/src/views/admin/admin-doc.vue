@@ -26,16 +26,9 @@
             <a-button type="primary" @click="edit(record)">
               编辑
             </a-button>
-            <a-popconfirm
-                title="删除后不可恢复，确认删除?"
-                ok-text="是"
-                cancel-text="否"
-                @confirm="del(record.id)"
-            >
-              <a-button type="danger" >
-                删除
-              </a-button>
-            </a-popconfirm>
+            <a-button type="danger" @click="del(record.id)">
+              删除
+            </a-button>
           </a-space>
         </template>
       </a-table>
@@ -73,11 +66,12 @@
 
 </template>
 <script lang="ts">
-import {defineComponent, onMounted, ref} from 'vue';
+import {createVNode, defineComponent, onMounted, ref} from 'vue';
 import axios from "axios";
-import {message} from "ant-design-vue";
+import {message, Modal} from "ant-design-vue";
 import {Tool} from "@/util/tool";
 import {useRoute} from "vue-router";
+import {ExclamationCircleOutlined} from "@ant-design/icons-vue";
 
 export default defineComponent({
   name: "AdminDoc",
@@ -151,6 +145,33 @@ export default defineComponent({
       }
     };
 
+    let ids: Array<string> = [];
+    let idsName: Array<string> = [];
+    /**
+     * 查找所有子树节点
+     */
+    const getDeleteIds = (level1: any, id: any) => {
+      // 遍历数组，即遍历某一层节点
+      for (let i = 0; i < level1.length; i++) {
+        const children = level1[i].children;
+        if (level1[i].id === id) {
+          ids.push(id);
+          idsName.push(level1[i].name);
+          // 遍历所有子节点
+          if (Tool.isNotEmpty(children)) {
+            for (let j = 0; j < children.length; j++) {
+              getDeleteIds(children, children[j].id)
+            }
+          }
+        } else {
+          // 如果当前节点不是目标节点，则到其子节点再找找看。
+          if (Tool.isNotEmpty(children)) {
+            getDeleteIds(children, id);
+          }
+        }
+      }
+    };
+
     // --- 表单信息 ---
     const modalVisible = ref(false);
     const modalLoading = ref(false);
@@ -197,13 +218,24 @@ export default defineComponent({
      */
     const del = (id: number) => {
       loading.value = true;
-      axios.delete("/doc/delete/" + id).then((response) => {
-        loading.value = false;
-        const data = response.data;
-        if (data.success) {
-          // 重新加载列表
-          handleQueryDoc();
-        }
+      ids = []
+      idsName = []
+      getDeleteIds(level1.value, id);
+      Modal.confirm({
+        title: '重要提醒',
+        icon: createVNode(ExclamationCircleOutlined),
+        content: '将删除：【' + idsName.join("，") + "】删除后不可恢复，确认删除？",
+        onOk() {
+          axios.delete("/doc/delete/" + ids.join(",")).then((response) => {
+            const data = response.data;
+            if (data.success) {
+              // 重新加载列表
+              handleQueryDoc();
+            } else {
+              message.error(data.message);
+            }
+          });
+        },
       });
     }
 
