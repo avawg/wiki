@@ -74,6 +74,14 @@ public class DocService {
     }
 
     /**
+     * 根据id查询文档内容
+     */
+    public String getContent(Long id) {
+        Content content = contentMapper.selectByPrimaryKey(id);
+        return content.getContent();
+    }
+
+    /**
      * 删除文档
      */
     public void delete(Long id) {

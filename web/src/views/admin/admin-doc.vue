@@ -125,6 +125,16 @@ export default defineComponent({
         }
       });
     };
+    const handleQueryContent = (id: any) => {
+      axios.get("/doc/content/" + id).then((response) => {
+        const data = response.data;
+        if (data.success) {
+          editor.txt.html(data.data);
+        } else {
+          message.error(data.message);
+        }
+      });
+    };
 
     const treeSelectData = ref(); // 树形目录
     treeSelectData.value = [];
@@ -189,22 +199,23 @@ export default defineComponent({
      * 修改文档
      */
     const edit = (record: any) => {
+      editor.txt.html("");
       doc.value = Tool.copy(record);
       treeSelectData.value = Tool.copy(level1.value);
       // 父文档不能选择当前节点及其子节点
       setDisable(treeSelectData.value, record.id);
       treeSelectData.value.unshift({"id": 0, "name": '无'});
-      editor.create();
+      handleQueryContent(record.id);
     };
     /**
      * 添加文档
      */
     const add = () => {
+      editor.txt.html("");
       console.log(route.query.ebookId);
       doc.value = {ebookId: route.query.ebookId};
       treeSelectData.value = Tool.copy(level1.value);
       treeSelectData.value.unshift({"id": 0, "name": '无'});
-      editor.create();
     };
     /**
      * 保存文档
@@ -216,7 +227,7 @@ export default defineComponent({
         if (data.success) {
           // 重新加载列表
           handleQueryDoc();
-          message.info("保存成功")
+          message.info("保存成功!")
         } else {
           message.error(data.message);
         }
@@ -250,6 +261,7 @@ export default defineComponent({
 
     onMounted(() => {
       handleQueryDoc();
+      editor.create();
     });
 
     return {

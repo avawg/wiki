@@ -47,6 +47,15 @@ public class DocController {
     }
 
     /**
+     * 根据id查询文档内容
+     */
+    @GetMapping("/content/{id}")
+    public Result getContent(@PathVariable Long id) {
+        String content = docService.getContent(id);
+        return Result.success(content);
+    }
+
+    /**
      * 保存文档 新增或更新
      */
     @PostMapping("/save")
