@@ -60,6 +60,9 @@
         <a-form-item label="顺序">
           <a-input v-model:value="doc.sort" />
         </a-form-item>
+        <a-form-item label="内容">
+          <div id="content"></div>
+        </a-form-item>
       </a-form>
     </a-modal>
   </a-layout>
@@ -72,6 +75,7 @@ import {message, Modal} from "ant-design-vue";
 import {Tool} from "@/util/tool";
 import {useRoute} from "vue-router";
 import {ExclamationCircleOutlined} from "@ant-design/icons-vue";
+import E from 'wangeditor'
 
 export default defineComponent({
   name: "AdminDoc",
@@ -191,6 +195,7 @@ export default defineComponent({
     };
 
     const doc = ref({});
+    const editor = new E('#content'); // 富文本
     /**
      * 修改文档
      */
@@ -202,6 +207,9 @@ export default defineComponent({
       treeSelectData.value = Tool.copy(level1.value);
       setDisable(treeSelectData.value, record.id);
       treeSelectData.value.unshift({"id": 0, "name": '无'});
+      setTimeout(function () {
+        editor.create();
+      }, 100);
     };
     /**
      * 添加文档
@@ -212,6 +220,9 @@ export default defineComponent({
       doc.value = {ebookId: route.query.ebookId};
       treeSelectData.value = Tool.copy(level1.value);
       treeSelectData.value.unshift({"id": 0, "name": '无'});
+      setTimeout(function () {
+        editor.create();
+      }, 100);
     };
     /**
      * 删除文档
