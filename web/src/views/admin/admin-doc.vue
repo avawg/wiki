@@ -77,10 +77,13 @@ import {defineComponent, onMounted, ref} from 'vue';
 import axios from "axios";
 import {message} from "ant-design-vue";
 import {Tool} from "@/util/tool";
+import {useRoute} from "vue-router";
 
 export default defineComponent({
   name: "AdminDoc",
   setup() {
+    const route = useRoute() // 路由信息
+
     const columns = [
       {
         title: '名称',
@@ -173,6 +176,7 @@ export default defineComponent({
     const edit = (record: any) => {
       modalVisible.value = true;
       doc.value = Tool.copy(record);
+
       // 父文档不能选择当前节点及其子节点
       treeSelectData.value = Tool.copy(level1.value);
       setDisable(treeSelectData.value, record.id);
@@ -182,8 +186,9 @@ export default defineComponent({
      * 添加文档
      */
     const add = () => {
+      console.log(route.query.ebookId);
       modalVisible.value = true;
-      doc.value = {};
+      doc.value = {ebookId: route.query.ebookId};
       treeSelectData.value = Tool.copy(level1.value);
       treeSelectData.value.unshift({"id": 0, "name": '无'});
     };
