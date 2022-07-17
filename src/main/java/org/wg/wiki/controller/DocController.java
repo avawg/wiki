@@ -2,6 +2,7 @@ package org.wg.wiki.controller;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.wg.wiki.model.entity.Content;
 import org.wg.wiki.model.entity.Doc;
 import org.wg.wiki.model.req.DocQueryReq;
 import org.wg.wiki.model.req.DocSaveReq;
@@ -49,10 +50,10 @@ public class DocController {
      * 保存文档 新增或更新
      */
     @PostMapping("/save")
-    // RequestBody解析json post request请求参数
     public Result save(@RequestBody @Valid DocSaveReq docReq) {
         Doc doc = copy(docReq, Doc.class);
-        docService.save(doc);
+        Content content = copy(docReq, Content.class);
+        docService.save(doc, content);
         return Result.success();
     }
 

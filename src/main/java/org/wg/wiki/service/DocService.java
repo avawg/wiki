@@ -7,7 +7,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
+import org.wg.wiki.mapper.ContentMapper;
 import org.wg.wiki.mapper.DocMapper;
+import org.wg.wiki.model.entity.Content;
 import org.wg.wiki.model.entity.Doc;
 import org.wg.wiki.model.entity.DocExample;
 import org.wg.wiki.model.req.DocQueryReq;
@@ -25,7 +27,10 @@ public class DocService {
     private DocMapper docMapper;
 
     @Autowired
-    SnowFlake snowFlake;
+    private ContentMapper contentMapper;
+
+    @Autowired
+    private SnowFlake snowFlake;
 
     /**
      * 查询所有数据
@@ -52,15 +57,19 @@ public class DocService {
     /**
      * 保存文档
      */
-    public void save(Doc doc) {
+    public void save(Doc doc, Content content) {
         if (ObjectUtils.isEmpty(doc.getId())) {
             long id = snowFlake.nextId();
             doc.setId(id); // 雪花算法生成id
-            doc.setViewCount(0);
-            doc.setVoteCount(0);
+            content.setId(id);
             docMapper.insert(doc); // 新增
+            contentMapper.insert(content);
         } else {
             docMapper.updateByPrimaryKey(doc); // 更新
+            int update = contentMapper.updateByPrimaryKeyWithBLOBs(content); // 包含大字段更新
+            if (update == 0) {
+                contentMapper.insertSelective(content);
+            }
         }
     }
 

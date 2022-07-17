@@ -181,7 +181,8 @@ export default defineComponent({
     };
 
     // --- 表单信息 ---
-    const doc = ref({});
+    const doc = ref();
+    doc.value = {};
     const editor = new E('#content'); // 富文本
     editor.config.zIndex = 0;
     /**
@@ -209,11 +210,13 @@ export default defineComponent({
      * 保存文档
      */
     const save = () => {
+      doc.value.content = editor.txt.html();
       axios.post("/doc/save", doc.value).then((response) => {
         const data = response.data;
         if (data.success) {
           // 重新加载列表
           handleQueryDoc();
+          message.info("保存成功")
         } else {
           message.error(data.message);
         }
