@@ -35,8 +35,10 @@ public class DocService {
     /**
      * 查询所有数据
      */
-    public List<Doc> all() {
+    public List<Doc> all(Long ebookId) {
         DocExample docExample = new DocExample();
+        DocExample.Criteria criteria = docExample.createCriteria();
+        criteria.andEbookIdEqualTo(ebookId);
         docExample.setOrderByClause("sort asc");
         List<Doc> list = docMapper.selectByExample(docExample);
         return list;
@@ -78,7 +80,11 @@ public class DocService {
      */
     public String getContent(Long id) {
         Content content = contentMapper.selectByPrimaryKey(id);
-        return content.getContent();
+        if (ObjectUtils.isEmpty(content)) {
+            return "";
+        } else {
+            return content.getContent();
+        }
     }
 
     /**

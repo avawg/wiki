@@ -44,7 +44,7 @@
 
               <a-list-item-meta :description="item.description">
                 <template #title>
-                  <a :href="item.href">{{ item.name }}</a>
+                  <router-link :to="'/doc?ebookId=' + item.id"> {{ item.name }} </router-link>
                 </template>
                 <template #avatar><a-avatar :src="item.cover" /></template>
               </a-list-item-meta>
@@ -115,6 +115,7 @@
 
         level1,
         ebooks,
+
         actions:  [
           { type: 'StarOutlined', text: '156' },
           { type: 'LikeOutlined', text: '156' },

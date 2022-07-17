@@ -31,9 +31,9 @@ public class DocController {
     /**
      * 查询所有文档
      */
-    @GetMapping("/all")
-    public Result all() {
-        List<Doc> list = docService.all();
+    @GetMapping("/all/{ebookId}")
+    public Result all(@PathVariable Long ebookId) {
+        List<Doc> list = docService.all(ebookId);
         return Result.success(list);
     }
 

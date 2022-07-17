@@ -70,12 +70,23 @@
             <a-form-item label="顺序">
               <a-input v-model:value="doc.sort" placeholder="顺序"/>
             </a-form-item>
+
+            <a-form-item label="内容预览">
+              <a-button type="primary" @click="previewContent()">
+                <EyeOutLined/>内容预览
+              </a-button>
+            </a-form-item>
+
             <a-form-item label="内容">
               <div id="content"></div>
             </a-form-item>
           </a-form>
         </a-col>
       </a-row>
+
+      <a-drawer width="900" placement="right" :closable="false" :visible="drawerVisible" @close="onDrawerClose">
+        <div class="wangeditor" :innerHTML="previewHtml"></div>
+      </a-drawer>
     </a-layout-content>
   </a-layout>
 
@@ -115,11 +126,15 @@ export default defineComponent({
      */
     const handleQueryDoc = () => {
       loading.value = true;
-      axios.get("/doc/all").then((response) => {
+      axios.get("/doc/all/" + route.query.ebookId).then((response) => {
         loading.value = false;
         const data = response.data;
         if (data.success) {
           level1.value = Tool.array2Tree(data.data, 0);
+          treeSelectData.value = Tool.copy(level1.value);
+          if (Tool.isNotEmpty(treeSelectData.value)) {
+            treeSelectData.value.unshift({"id": 0, "name": '无'});
+          }
         } else {
           message.error(data.message);
         }
@@ -136,7 +151,7 @@ export default defineComponent({
       });
     };
 
-    const treeSelectData = ref(); // 树形目录
+    const treeSelectData = ref([]); // 树形目录
     treeSelectData.value = [];
     /**
      * 将某节点及其子孙节点全部置为disabled
@@ -192,7 +207,7 @@ export default defineComponent({
 
     // --- 表单信息 ---
     const doc = ref();
-    doc.value = {};
+    doc.value = {ebookId: route.query.ebookId};
     const editor = new E('#content'); // 富文本
     editor.config.zIndex = 0;
     /**
@@ -204,7 +219,9 @@ export default defineComponent({
       treeSelectData.value = Tool.copy(level1.value);
       // 父文档不能选择当前节点及其子节点
       setDisable(treeSelectData.value, record.id);
-      treeSelectData.value.unshift({"id": 0, "name": '无'});
+      if (Tool.isNotEmpty(treeSelectData.value)) {
+        treeSelectData.value.unshift({"id": 0, "name": '无'});
+      }
       handleQueryContent(record.id);
     };
     /**
@@ -215,7 +232,9 @@ export default defineComponent({
       console.log(route.query.ebookId);
       doc.value = {ebookId: route.query.ebookId};
       treeSelectData.value = Tool.copy(level1.value);
-      treeSelectData.value.unshift({"id": 0, "name": '无'});
+      if (Tool.isNotEmpty(treeSelectData.value)) {
+        treeSelectData.value.unshift({"id": 0, "name": '无'});
+      }
     };
     /**
      * 保存文档
@@ -259,6 +278,18 @@ export default defineComponent({
       });
     }
 
+    // ----------------富文本预览--------------
+    const drawerVisible = ref(false);
+    const previewHtml = ref();
+    const previewContent = () => {
+      const html = editor.txt.html();
+      previewHtml.value = html;
+      drawerVisible.value = true;
+    };
+    const onDrawerClose = () => {
+      drawerVisible.value = false;
+    };
+
     onMounted(() => {
       handleQueryDoc();
       editor.create();
@@ -277,6 +308,11 @@ export default defineComponent({
       save,
       add,
       del,
+
+      drawerVisible,
+      previewHtml,
+      previewContent,
+      onDrawerClose,
     };
   }
 });
