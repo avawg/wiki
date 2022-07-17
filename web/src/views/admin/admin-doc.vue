@@ -1,70 +1,82 @@
 <template>
   <a-layout>
     <a-layout-content :style="{ background: '#fff', padding: '24px', margin: 0, minHeight: '280px' }">
-      <a-form layout="inline">
-        <a-form-item>
-          <a-button type="primary" @click="handleQueryDoc()">
-            查询
-          </a-button>
-        </a-form-item>
-        <a-form-item>
-          <a-button type="primary" @click="add()">
-            新增
-          </a-button>
-        </a-form-item>
-      </a-form>
-      <!-- 表格 -->
-      <a-table
-          :columns="columns"
-          :row-key="record => record.id"
-          :data-source="level1"
-          :loading="loading"
-          :pagination="false"
-      >
-        <template v-slot:action="{ text, record }">
-          <a-space size="small">
-            <a-button type="primary" @click="edit(record)">
-              编辑
-            </a-button>
-            <a-button type="danger" @click="del(record.id)">
-              删除
-            </a-button>
-          </a-space>
-        </template>
-      </a-table>
+      <a-row :gutter="24">
+        <a-col :span="8">
+            <a-form layout="inline">
+              <a-form-item>
+                <a-button type="primary" @click="handleQueryDoc()">
+                  查询
+                </a-button>
+              </a-form-item>
+              <a-form-item>
+                <a-button type="primary" @click="add()">
+                  新增
+                </a-button>
+              </a-form-item>
+            </a-form>
+            <!-- 表格 -->
+            <a-table
+                v-if="level1.length > 0"
+                :columns="columns"
+                :row-key="record => record.id"
+                :data-source="level1"
+                :loading="loading"
+                :pagination="false"
+                size="small"
+                :defaultExpandAllRows="true"
+            >
+              <template #name="{text, record}">
+                {{record.sort}} {{text}}
+              </template>
+              <template v-slot:action="{ text, record }">
+                <a-space size="small">
+                  <a-button type="primary" @click="edit(record)" size="small">
+                    编辑
+                  </a-button>
+                  <a-button type="danger" @click="del(record.id)" size="small">
+                    删除
+                  </a-button>
+                </a-space>
+              </template>
+            </a-table>
+        </a-col>
+        <a-col :span="16">
+          <p>
+            <a-form layout="inline">
+              <a-form-item>
+                <a-button type="primary" @click="save()">
+                  保存
+                </a-button>
+              </a-form-item>
+            </a-form>
+          </p>
+          <a-form :model="doc" layout="vertical">
+            <a-form-item label="名称">
+              <a-input v-model:value="doc.name" placeholder="名称"/>
+            </a-form-item>
+            <a-form-item label="父文档">
+              <a-tree-select
+                  v-model:value="doc.parentId"
+                  style="width: 100%"
+                  :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
+                  :tree-data="treeSelectData"
+                  placeholder="请选择父文档"
+                  tree-default-expand-all
+                  :replaceFields="{title: 'name', key: 'id', value: 'id'}"
+              >
+              </a-tree-select>
+            </a-form-item>
+            <a-form-item label="顺序">
+              <a-input v-model:value="doc.sort" placeholder="顺序"/>
+            </a-form-item>
+            <a-form-item label="内容">
+              <div id="content"></div>
+            </a-form-item>
+          </a-form>
+        </a-col>
+      </a-row>
     </a-layout-content>
-
-    <!-- 编辑表单 -->
-    <a-modal
-        title="文档表单"
-        v-model:visible="modalVisible"
-        :confirm-loading="modalLoading"
-        @ok="modalHandleOk"
-    >
-      <a-form :model="doc" :label-col="{ span: 6 }" :wrapper-col="{ span: 18 }">
-        <a-form-item label="名称">
-          <a-input v-model:value="doc.name" />
-        </a-form-item>
-        <a-form-item label="父文档">
-          <a-tree-select
-              v-model:value="doc.parentId"
-              style="width: 100%"
-              :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
-              :tree-data="treeSelectData"
-              placeholder="请选择父文档"
-              tree-default-expand-all
-              :replaceFields="{title: 'name', key: 'id', value: 'id'}"
-          >
-          </a-tree-select>
-        </a-form-item>
-        <a-form-item label="顺序">
-          <a-input v-model:value="doc.sort" />
-        </a-form-item>
-        <a-form-item label="内容">
-          <div id="content"></div>
-        </a-form-item>
-      </a-form>
-    </a-modal>
   </a-layout>
 
 </template>
@@ -85,16 +97,8 @@ export default defineComponent({
     const columns = [
       {
         title: '名称',
-        dataIndex: 'name'
-      },
-      {
-        title: '父文档',
-        key: 'parentId',
-        dataIndex: 'parentId'
-      },
-      {
-        title: '排序',
-        dataIndex: 'sort'
+        dataIndex: 'name',
+        slots: {customRender: 'name'}
       },
       {
         title: 'Action',
@@ -177,53 +181,44 @@ export default defineComponent({
     };
 
     // --- 表单信息 ---
-    const modalVisible = ref(false);
-    const modalLoading = ref(false);
-    const modalHandleOk = () => {
-      modalLoading.value = true;
-      axios.post("/doc/save", doc.value).then((response) => {
-        modalVisible.value = false;
-        const data = response.data;
-        if (data.success) {
-          modalLoading.value = false;
-          // 重新加载列表
-          handleQueryDoc();
-        } else {
-          message.error(data.message);
-        }
-      });
-    };
-
     const doc = ref({});
     const editor = new E('#content'); // 富文本
+    editor.config.zIndex = 0;
     /**
      * 修改文档
      */
     const edit = (record: any) => {
-      modalVisible.value = true;
       doc.value = Tool.copy(record);
-
-      // 父文档不能选择当前节点及其子节点
       treeSelectData.value = Tool.copy(level1.value);
+      // 父文档不能选择当前节点及其子节点
       setDisable(treeSelectData.value, record.id);
       treeSelectData.value.unshift({"id": 0, "name": '无'});
-      setTimeout(function () {
-        editor.create();
-      }, 100);
+      editor.create();
     };
     /**
      * 添加文档
      */
     const add = () => {
       console.log(route.query.ebookId);
-      modalVisible.value = true;
       doc.value = {ebookId: route.query.ebookId};
       treeSelectData.value = Tool.copy(level1.value);
       treeSelectData.value.unshift({"id": 0, "name": '无'});
-      setTimeout(function () {
-        editor.create();
-      }, 100);
+      editor.create();
     };
+    /**
+     * 保存文档
+     */
+    const save = () => {
+      axios.post("/doc/save", doc.value).then((response) => {
+        const data = response.data;
+        if (data.success) {
+          // 重新加载列表
+          handleQueryDoc();
+        } else {
+          message.error(data.message);
+        }
+      });
+    }
     /**
      * 删除文档
      */
@@ -262,11 +257,9 @@ export default defineComponent({
       handleQueryDoc,
       treeSelectData,
 
-      modalVisible,
-      modalLoading,
-      modalHandleOk,
       doc,
       edit,
+      save,
       add,
       del,
     };
