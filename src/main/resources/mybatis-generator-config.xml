@@ -35,10 +35,19 @@
         <!-- mapper类的位置 -->
         <javaClientGenerator targetPackage="org.wg.wiki.mapper" targetProject="src/main/java" type="XMLMAPPER"/>
 
-        <table tableName="t_ebook">
-            <domainObjectRenamingRule searchString="^T" replaceString="" />
-        </table>
-        <table tableName="t_category">
+        <!--<table tableName="t_ebook">-->
+        <!--    <domainObjectRenamingRule searchString="^T" replaceString="" />-->
+        <!--</table>-->
+        <!--<table tableName="t_category">-->
+        <!--    <domainObjectRenamingRule searchString="^T" replaceString="" />-->
+        <!--</table>-->
+        <!--<table tableName="t_doc">-->
+        <!--    <domainObjectRenamingRule searchString="^T" replaceString="" />-->
+        <!--</table>-->
+        <!--<table tableName="t_content">-->
+        <!--    <domainObjectRenamingRule searchString="^T" replaceString="" />-->
+        <!--</table>-->
+        <table tableName="t_user">
             <domainObjectRenamingRule searchString="^T" replaceString="" />
         </table>
     </context>
