@@ -27,6 +27,9 @@
       >
         <template v-slot:action="{ text, record }">
           <a-space size="small">
+            <a-button type="primary" @click="resetPassword(record)">
+              重置密码
+            </a-button>
             <a-button type="primary" @click="edit(record)">
               编辑
             </a-button>
@@ -60,7 +63,22 @@
         <a-form-item label="昵称">
           <a-input v-model:value="user.name" />
         </a-form-item>
-        <a-form-item label="密码">
+        <a-form-item label="密码" v-show="!user.id">
+          <a-input v-model:value="user.password" />
+        </a-form-item>
+      </a-form>
+    </a-modal>
+
+    <!-- 重置密码表单 -->
+    <a-modal
+        title="重置密码表单"
+        v-model:visible="resetModalVisible"
+        :confirm-loading="resetModalLoading"
+        @ok="resetModalHandleOk"
+        @cancel="resetModalHandleCancel"
+    >
+      <a-form :model="user" :label-col="{ span: 6 }" :wrapper-col="{ span: 18 }">
+        <a-form-item label="密码" >
           <a-input v-model:value="user.password" />
         </a-form-item>
       </a-form>
@@ -152,6 +170,7 @@ declare let KEY: any;
         user.value.password = hexMd5(user.value.password, KEY);
         axios.post("/user/save", user.value).then((response) => {
           modalVisible.value = false;
+          modalLoading.value = false;
           const data = response.data;
           if (data.success) {
             // 重新加载列表
@@ -207,6 +226,40 @@ declare let KEY: any;
         });
       });
 
+
+      /**
+       * 重置密码
+       */
+      const resetPassword = (record: any) => {
+        resetModalVisible.value = true;
+        user.value = Tool.copy(record);
+        user.value.password = null;
+      };
+      // --- 重置密码 ---
+      const resetModalVisible = ref(false);
+      const resetModalLoading = ref(false);
+      const resetModalHandleOk = () => {
+        resetModalLoading.value = true;
+        user.value.password = hexMd5(user.value.password, KEY);
+        axios.post("/user/resetPassword", user.value).then((response) => {
+          resetModalLoading.value = false;
+          const data = response.data;
+          if (data.success) {
+            resetModalVisible.value = false;
+            // 重新加载列表
+            handleQuery({
+              page: pagination.value.current,
+              size: pagination.value.pageSize
+            });
+          } else {
+            message.error(data.message);
+          }
+        });
+      };
+      const resetModalHandleCancel = () => {
+        resetModalLoading.value = false;
+      }
+
       return {
         columns,
         users,
@@ -225,6 +278,12 @@ declare let KEY: any;
         edit,
         add,
         del,
+
+        resetPassword,
+        resetModalVisible,
+        resetModalLoading,
+        resetModalHandleOk,
+        resetModalHandleCancel,
       };
     }
   });

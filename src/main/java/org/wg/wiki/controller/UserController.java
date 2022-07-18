@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.wg.wiki.model.entity.User;
 import org.wg.wiki.model.req.UserQueryReq;
+import org.wg.wiki.model.req.UserResetPasswordReq;
 import org.wg.wiki.model.req.UserSaveReq;
 import org.wg.wiki.model.resp.Page;
 import org.wg.wiki.model.resp.Result;
@@ -41,6 +42,16 @@ public class UserController {
     public Result save(@RequestBody @Valid UserSaveReq userReq) {
         User user = copy(userReq, User.class);
         userService.save(user);
+        return Result.success();
+    }
+
+    /**
+     * 重置密码
+     */
+    @PostMapping("/resetPassword")
+    public Result resetPassword(@RequestBody @Valid UserResetPasswordReq req) {
+        User user = copy(req, User.class);
+        userService.resetPassword(user);
         return Result.success();
     }
 }

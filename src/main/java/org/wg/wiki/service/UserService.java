@@ -57,7 +57,6 @@ public class UserService {
         user.setPassword(md5Password);
 
         if (ObjectUtils.isEmpty(user.getId())) {
-
             User userDB = getByLoginName(user.getLoginName());
             if (ObjectUtils.isEmpty(userDB)) {
                 user.setId(snowFlake.nextId()); // 雪花算法生成id
@@ -66,7 +65,8 @@ public class UserService {
                 throw new BusinessException(BusinessExceptionCode.USER_LOGIN_NAME_EXISTS);
             }
         } else {
-            user.setLoginName(null); // 不更新登录名
+            user.setLoginName(null); // 不更新登录名和密码
+            user.setPassword(null);
             userMapper.updateByPrimaryKeySelective(user);
         }
     }
@@ -87,5 +87,14 @@ public class UserService {
      */
     public void delete(Long id) {
         userMapper.deleteByPrimaryKey(id);
+    }
+
+    /**
+     * 重置密码
+     */
+    public void resetPassword(User user) {
+        String md5Password = DigestUtils.md5DigestAsHex(user.getPassword().getBytes(StandardCharsets.UTF_8));
+        user.setPassword(md5Password);
+        userMapper.updateByPrimaryKeySelective(user);
     }
 }
