@@ -167,7 +167,7 @@ declare let KEY: any;
       const modalLoading = ref(false);
       const modalHandleOk = () => {
         modalLoading.value = true;
-        user.value.password = hexMd5(user.value.password, KEY);
+        user.value.password = hexMd5(user.value.password + KEY);
         axios.post("/user/save", user.value).then((response) => {
           modalVisible.value = false;
           modalLoading.value = false;
@@ -226,7 +226,6 @@ declare let KEY: any;
         });
       });
 
-
       /**
        * 重置密码
        */
@@ -240,7 +239,7 @@ declare let KEY: any;
       const resetModalLoading = ref(false);
       const resetModalHandleOk = () => {
         resetModalLoading.value = true;
-        user.value.password = hexMd5(user.value.password, KEY);
+        user.value.password = hexMd5(user.value.password + KEY);
         axios.post("/user/resetPassword", user.value).then((response) => {
           resetModalLoading.value = false;
           const data = response.data;

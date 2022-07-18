@@ -16,10 +16,13 @@ import org.wg.wiki.model.entity.User;
 import org.wg.wiki.model.entity.UserExample;
 import org.wg.wiki.model.req.UserQueryReq;
 import org.wg.wiki.model.resp.Page;
+import org.wg.wiki.model.resp.UserLoginResp;
 import org.wg.wiki.utils.SnowFlake;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+
+import static org.wg.wiki.utils.CopyUtil.copy;
 
 @Service
 public class UserService {
@@ -46,6 +49,25 @@ public class UserService {
         page.setTotal(pageInfo.getTotal());
         page.setList(usersList);
         return page;
+    }
+
+    /**
+     * 用户登录
+     */
+    public UserLoginResp login(User loginUser) {
+        // 密码md5加密
+        String md5Password = DigestUtils.md5DigestAsHex(loginUser.getPassword().getBytes(StandardCharsets.UTF_8));
+        loginUser.setPassword(md5Password);
+        User userDB = getByLoginName(loginUser.getLoginName());
+        if (ObjectUtils.isEmpty(userDB)) {
+            logger.info("用户名不存在 {}", loginUser.getLoginName());
+        }
+        // 登录成功
+        if (userDB.getPassword().equals(loginUser.getPassword())) {
+            return copy(userDB, UserLoginResp.class);
+        }
+        logger.info("密码错误，输入密码 {}，数据库密码{}", loginUser.getPassword(), userDB.getPassword());
+        throw new BusinessException(BusinessExceptionCode.USER_LOGIN_ERROR);
     }
 
     /**
