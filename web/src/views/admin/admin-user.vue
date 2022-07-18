@@ -50,6 +50,7 @@
         title="用户表单"
         v-model:visible="modalVisible"
         :confirm-loading="modalLoading"
+        @cancel="modalHandleCancel"
         @ok="modalHandleOk"
     >
       <a-form :model="user" :label-col="{ span: 6 }" :wrapper-col="{ span: 18 }">
@@ -72,6 +73,9 @@ import {defineComponent, onMounted, ref} from 'vue';
 import axios from "axios";
 import {message} from "ant-design-vue";
 import {Tool} from "@/util/tool";
+
+declare let hexMd5: any;
+declare let KEY: any;
 
   export default defineComponent({
     name: "AdminUser",
@@ -145,6 +149,7 @@ import {Tool} from "@/util/tool";
       const modalLoading = ref(false);
       const modalHandleOk = () => {
         modalLoading.value = true;
+        user.value.password = hexMd5(user.value.password, KEY);
         axios.post("/user/save", user.value).then((response) => {
           modalVisible.value = false;
           const data = response.data;
@@ -159,6 +164,9 @@ import {Tool} from "@/util/tool";
           }
         });
       };
+      const modalHandleCancel = () => {
+        modalLoading.value = false;
+      }
 
       /**
        * 修改用户
@@ -213,6 +221,7 @@ import {Tool} from "@/util/tool";
         modalVisible,
         modalLoading,
         modalHandleOk,
+        modalHandleCancel,
         edit,
         add,
         del,

@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.DigestUtils;
 import org.springframework.util.ObjectUtils;
 import org.wg.wiki.exception.BusinessException;
 import org.wg.wiki.exception.BusinessExceptionCode;
@@ -17,6 +18,7 @@ import org.wg.wiki.model.req.UserQueryReq;
 import org.wg.wiki.model.resp.Page;
 import org.wg.wiki.utils.SnowFlake;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 @Service
@@ -50,7 +52,12 @@ public class UserService {
      * 保存用户
      */
     public void save(User user) {
+        // 密码md5加密
+        String md5Password = DigestUtils.md5DigestAsHex(user.getPassword().getBytes(StandardCharsets.UTF_8));
+        user.setPassword(md5Password);
+
         if (ObjectUtils.isEmpty(user.getId())) {
+
             User userDB = getByLoginName(user.getLoginName());
             if (ObjectUtils.isEmpty(userDB)) {
                 user.setId(snowFlake.nextId()); // 雪花算法生成id
