@@ -1,11 +1,22 @@
 <template>
   <a-layout-header class="header">
     <div class="logo" />
-    <a class="login-menu" v-show="user.id">
-      <span>您好: {{user.name}} </span>
-    </a>
     <a class="login-menu" @click="showLoginModal" v-show="!user.id">
       <span>登录</span>
+    </a>
+    <a-popconfirm
+        title="确认退出登录?"
+        ok-text="是"
+        cancel-text="否"
+        @confirm="logout()"
+    >
+      <a class="login-menu" v-show="user.id">
+        <span>退出登录</span>
+      </a>
+    </a-popconfirm>
+
+    <a class="login-menu" v-show="user.id">
+      <span>您好: {{user.name}} </span>
     </a>
     <a-menu
         theme="dark"
@@ -92,12 +103,25 @@ import {computed, defineComponent, ref} from 'vue';
         });
       };
 
+      const logout = () => {
+        axios.post('/user/logout/' + user.value.token).then((response) => {
+          const data = response.data;
+          if (data.success) {
+            message.info(data.message);
+            store.commit("setUser", {});
+          } else {
+            message.error("退出登录失败");
+          }
+        });
+      };
+
       return {
         loginModalVisible,
         loginModalLoading,
         showLoginModal,
         loginUser,
         login,
+        logout,
 
         user,
       }

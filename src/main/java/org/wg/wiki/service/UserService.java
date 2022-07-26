@@ -76,11 +76,19 @@ public class UserService {
             logger.info("生成单点登录token: {}，并放入redis中", token);
             UserLoginResp userLoginResp = copy(userDB, UserLoginResp.class);
             userLoginResp.setToken(token.toString());
-            redisTemplate.opsForValue().set(token, JSONObject.toJSONString(userLoginResp), 3600 * 24, TimeUnit.SECONDS);
+            redisTemplate.opsForValue().set(token.toString(), JSONObject.toJSONString(userLoginResp), 3600 * 24, TimeUnit.SECONDS);
             return userLoginResp;
         }
         logger.info("密码错误，输入密码 {}，数据库密码{}", loginUser.getPassword(), userDB.getPassword());
         throw new BusinessException(BusinessExceptionCode.USER_LOGIN_ERROR);
+    }
+
+    /**
+     * 退出登录
+     */
+    public void logout(String token) {
+        redisTemplate.delete(token);
+        logger.info("从redis中删除token: {}", token);
     }
 
     /**

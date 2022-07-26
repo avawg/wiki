@@ -48,6 +48,15 @@ public class UserController {
     }
 
     /**
+     * 用户登录
+     */
+    @PostMapping("/logout/{token}")
+    public Result logout(@PathVariable(name = "token") String token) {
+        userService.logout(token);
+        return Result.success("退出登录成功");
+    }
+
+    /**
      * 保存用户 新增或更新
      */
     @PostMapping("/save")
