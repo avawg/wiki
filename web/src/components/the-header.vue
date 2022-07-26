@@ -1,10 +1,15 @@
 <template>
   <a-layout-header class="header">
     <div class="logo" />
+    <a class="login-menu" v-show="user.id">
+      <span>您好: {{user.name}} </span>
+    </a>
+    <a class="login-menu" @click="showLoginModal" v-show="!user.id">
+      <span>登录</span>
+    </a>
     <a-menu
         theme="dark"
         mode="horizontal"
-        v-model:selectedKeys="selectedKeys1"
         :style="{ lineHeight: '64px' }"
     >
       <a-menu-item key="/">
@@ -22,9 +27,6 @@
       <a-menu-item key="/about">
         <router-link to="/about">关于我们</router-link>
       </a-menu-item>
-      <a class="login-menu" @click="showLoginModal">
-        <span>登录</span>
-      </a>
     </a-menu>
 
     <!-- 登录模态框 -->
@@ -60,9 +62,12 @@
     setup () {
       // 登录用户
       const loginUser = ref({
-        loginName: "test",
-        password: "test"
+        loginName: "wang gang",
+        password: "Wg296513@"
       });
+      const user = ref({});
+      user.value = {};
+
       const loginModalVisible = ref(false);
       const loginModalLoading = ref(false);
       const showLoginModal = () => {
@@ -79,6 +84,7 @@
           const data = response.data;
           if (data.success) {
             loginModalVisible.value = false;
+            user.value = data.data;
             message.success("登录成功！");
           } else {
             message.error(data.message);
@@ -92,15 +98,17 @@
         showLoginModal,
         loginUser,
         login,
+
+        user,
       }
     }
   });
 </script>
 
 <style>
-.login-menu {
-  float: right;
-  color: white;
-  /*padding-left: 10px;*/
-}
+  .login-menu {
+    float: right;
+    color: white;
+    padding-left: 10px;
+  }
 </style>

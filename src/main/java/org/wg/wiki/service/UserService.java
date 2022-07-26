@@ -1,10 +1,13 @@
 package org.wg.wiki.service;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.DigestUtils;
@@ -21,6 +24,7 @@ import org.wg.wiki.utils.SnowFlake;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import static org.wg.wiki.utils.CopyUtil.copy;
 
@@ -31,6 +35,9 @@ public class UserService {
 
     @Autowired
     private UserMapper userMapper;
+
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     @Autowired
     private SnowFlake snowFlake;
@@ -61,10 +68,16 @@ public class UserService {
         User userDB = getByLoginName(loginUser.getLoginName());
         if (ObjectUtils.isEmpty(userDB)) {
             logger.info("用户名不存在 {}", loginUser.getLoginName());
+            throw new BusinessException(BusinessExceptionCode.USER_LOGIN_ERROR);
         }
         // 登录成功
         if (userDB.getPassword().equals(loginUser.getPassword())) {
-            return copy(userDB, UserLoginResp.class);
+            Long token = snowFlake.nextId();
+            logger.info("生成单点登录token: {}，并放入redis中", token);
+            UserLoginResp userLoginResp = copy(userDB, UserLoginResp.class);
+            userLoginResp.setToken(token.toString());
+            redisTemplate.opsForValue().set(token, JSONObject.toJSONString(userLoginResp), 3600 * 24, TimeUnit.SECONDS);
+            return userLoginResp;
         }
         logger.info("密码错误，输入密码 {}，数据库密码{}", loginUser.getPassword(), userDB.getPassword());
         throw new BusinessException(BusinessExceptionCode.USER_LOGIN_ERROR);

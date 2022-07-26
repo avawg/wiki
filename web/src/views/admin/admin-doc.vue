@@ -151,7 +151,7 @@ export default defineComponent({
       });
     };
 
-    const treeSelectData = ref([]); // 树形目录
+    const treeSelectData = ref(); // 树形目录
     treeSelectData.value = [];
     /**
      * 将某节点及其子孙节点全部置为disabled
