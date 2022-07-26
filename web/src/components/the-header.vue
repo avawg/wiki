@@ -50,9 +50,10 @@
 </template>
 
 <script lang="ts">
-  import { defineComponent, ref } from 'vue';
+import {computed, defineComponent, ref} from 'vue';
   import axios from "axios";
   import {message} from 'ant-design-vue';
+  import store from "@/store";
 
   declare let hexMd5: any;
   declare let KEY: any;
@@ -65,8 +66,7 @@
         loginName: "wang gang",
         password: "Wg296513@"
       });
-      const user = ref({});
-      user.value = {};
+      const user = computed(() => store.state.user);
 
       const loginModalVisible = ref(false);
       const loginModalLoading = ref(false);
@@ -84,8 +84,8 @@
           const data = response.data;
           if (data.success) {
             loginModalVisible.value = false;
-            user.value = data.data;
             message.success("登录成功！");
+            store.commit("setUser", data.data);
           } else {
             message.error(data.message);
           }

@@ -1,12 +1,19 @@
 <template>
   <a-layout-footer style="text-align: center">
-    wiki ©2022
+    {{user.name}} wiki ©2022
   </a-layout-footer>
 </template>
 
 <script lang="ts">
-  import { defineComponent} from 'vue';
+import {computed, defineComponent} from 'vue';
+import store from "@/store";
   export default defineComponent({
-    name: 'the-footer'
+    name: 'the-footer',
+    setup() {
+      const user = computed(() => store.state.user);
+      return {
+        user,
+      }
+    }
   });
 </script>
