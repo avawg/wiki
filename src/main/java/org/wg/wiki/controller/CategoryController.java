@@ -49,7 +49,7 @@ public class CategoryController {
     /**
      * 删除分类
      */
-    @DeleteMapping ("/delete/{id}")
+    @PostMapping ("/delete/{id}")
     public Result delete(@PathVariable Long id) {
         logger.info("id: {}", id);
         categoryService.delete(id);

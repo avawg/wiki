@@ -60,7 +60,7 @@ public class DocController {
     /**
      * 删除文档
      */
-    @DeleteMapping ("/delete/{ids}")
+    @PostMapping ("/delete/{ids}")
     public Result delete(@PathVariable String ids) {
         logger.info("ids: {}", ids);
         List<String> list = Arrays.asList(ids.split(","));

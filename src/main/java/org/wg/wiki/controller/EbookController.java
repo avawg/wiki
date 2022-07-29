@@ -48,7 +48,7 @@ public class EbookController {
     /**
      * 删除图书
      */
-    @DeleteMapping ("/delete/{id}")
+    @PostMapping ("/delete/{id}")
     public Result delete(@PathVariable Long id) {
         logger.info("id: {}", id);
         ebookService.delete(id);

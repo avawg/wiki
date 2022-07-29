@@ -33,13 +33,6 @@ public class Result<T> {
         return result;
     }
 
-    public static Result success(String message) {
-        Result result = new Result();
-        result.success = true;
-        result.message = message;
-        return result;
-    }
-
     public static Result error(String message) {
         Result result = new Result();
         result.success = false;

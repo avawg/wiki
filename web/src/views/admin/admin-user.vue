@@ -206,7 +206,7 @@ declare let KEY: any;
        */
       const del = (id: number) => {
         loading.value = true;
-        axios.delete("/user/delete/" + id).then((response) => {
+        axios.post("/user/delete/" + id).then((response) => {
           loading.value = false;
           const data = response.data;
           if (data.success) {

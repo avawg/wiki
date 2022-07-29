@@ -212,9 +212,9 @@ import {Tool} from "@/util/tool";
         ebook.value.category2Id = categoryIds.value[1];
         axios.post("/ebook/save", ebook.value).then((response) => {
           modalVisible.value = false;
+          modalLoading.value = false;
           const data = response.data;
           if (data.success) {
-            modalLoading.value = false;
             // 重新加载列表
             handleQuery({
               page: pagination.value.current,
@@ -246,7 +246,7 @@ import {Tool} from "@/util/tool";
        */
       const del = (id: number) => {
         loading.value = true;
-        axios.delete("/ebook/delete/" + id).then((response) => {
+        axios.post("/ebook/delete/" + id).then((response) => {
           loading.value = false;
           const data = response.data;
           if (data.success) {

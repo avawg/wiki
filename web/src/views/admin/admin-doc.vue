@@ -134,6 +134,8 @@ export default defineComponent({
           treeSelectData.value = Tool.copy(level1.value);
           if (Tool.isNotEmpty(treeSelectData.value)) {
             treeSelectData.value.unshift({"id": 0, "name": '无'});
+          } else {
+            treeSelectData.value = [{"id": 0, "name": '无'}]
           }
         } else {
           message.error(data.message);
@@ -221,6 +223,8 @@ export default defineComponent({
       setDisable(treeSelectData.value, record.id);
       if (Tool.isNotEmpty(treeSelectData.value)) {
         treeSelectData.value.unshift({"id": 0, "name": '无'});
+      } else {
+        treeSelectData.value = {"id": 0, "name": '无'};
       }
       handleQueryContent(record.id);
     };
@@ -234,6 +238,8 @@ export default defineComponent({
       treeSelectData.value = Tool.copy(level1.value);
       if (Tool.isNotEmpty(treeSelectData.value)) {
         treeSelectData.value.unshift({"id": 0, "name": '无'});
+      } else {
+        treeSelectData.value = {"id": 0, "name": '无'};
       }
     };
     /**
@@ -265,7 +271,7 @@ export default defineComponent({
         icon: createVNode(ExclamationCircleOutlined),
         content: '将删除：【' + idsName.join("，") + "】删除后不可恢复，确认删除？",
         onOk() {
-          axios.delete("/doc/delete/" + ids.join(",")).then((response) => {
+          axios.post("/doc/delete/" + ids.join(",")).then((response) => {
             const data = response.data;
             if (data.success) {
               // 重新加载列表
@@ -282,8 +288,7 @@ export default defineComponent({
     const drawerVisible = ref(false);
     const previewHtml = ref();
     const previewContent = () => {
-      const html = editor.txt.html();
-      previewHtml.value = html;
+      previewHtml.value = editor.txt.html();
       drawerVisible.value = true;
     };
     const onDrawerClose = () => {

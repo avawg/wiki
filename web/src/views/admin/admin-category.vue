@@ -132,9 +132,9 @@ import {Tool} from "@/util/tool";
         modalLoading.value = true;
         axios.post("/category/save", category.value).then((response) => {
           modalVisible.value = false;
+          modalLoading.value = false;
           const data = response.data;
           if (data.success) {
-            modalLoading.value = false;
             // 重新加载列表
             handleQueryCategory();
           } else {
@@ -163,7 +163,7 @@ import {Tool} from "@/util/tool";
        */
       const del = (id: number) => {
         loading.value = true;
-        axios.delete("/category/delete/" + id).then((response) => {
+        axios.post("/category/delete/" + id).then((response) => {
           loading.value = false;
           const data = response.data;
           if (data.success) {

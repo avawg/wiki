@@ -15,7 +15,6 @@ import org.wg.wiki.model.resp.UserLoginResp;
 import org.wg.wiki.service.UserService;
 
 import javax.validation.Valid;
-import java.util.List;
 
 import static org.wg.wiki.utils.CopyUtil.copy;
 
@@ -53,7 +52,10 @@ public class UserController {
     @PostMapping("/logout/{token}")
     public Result logout(@PathVariable(name = "token") String token) {
         userService.logout(token);
-        return Result.success("退出登录成功");
+        Result result = new Result();
+        result.setSuccess(true);
+        result.setMessage("退出登录成功");
+        return result;
     }
 
     /**
@@ -73,6 +75,15 @@ public class UserController {
     public Result resetPassword(@RequestBody @Valid UserResetPasswordReq req) {
         User user = copy(req, User.class);
         userService.resetPassword(user);
+        return Result.success();
+    }
+
+    /**
+     * 删除用户
+     */
+    @PostMapping("/delete/{id}")
+    public Result delete(@PathVariable(value = "id") Long id) {
+        userService.delete(id);
         return Result.success();
     }
 }

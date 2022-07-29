@@ -102,7 +102,6 @@ public class UserService {
         if (ObjectUtils.isEmpty(user.getId())) {
             User userDB = getByLoginName(user.getLoginName());
             if (ObjectUtils.isEmpty(userDB)) {
-                user.setId(snowFlake.nextId()); // 雪花算法生成id
                 userMapper.insert(user); // 新增
             } else {
                 throw new BusinessException(BusinessExceptionCode.USER_LOGIN_NAME_EXISTS);

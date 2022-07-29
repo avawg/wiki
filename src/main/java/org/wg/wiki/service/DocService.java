@@ -1,7 +1,5 @@
 package org.wg.wiki.service;
 
-import com.github.pagehelper.PageHelper;
-import com.github.pagehelper.PageInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,9 +10,6 @@ import org.wg.wiki.mapper.DocMapper;
 import org.wg.wiki.model.entity.Content;
 import org.wg.wiki.model.entity.Doc;
 import org.wg.wiki.model.entity.DocExample;
-import org.wg.wiki.model.req.DocQueryReq;
-import org.wg.wiki.model.resp.Page;
-import org.wg.wiki.utils.SnowFlake;
 
 import java.util.List;
 
@@ -29,9 +24,6 @@ public class DocService {
     @Autowired
     private ContentMapper contentMapper;
 
-    @Autowired
-    private SnowFlake snowFlake;
-
     /**
      * 查询所有数据
      */
@@ -44,26 +36,12 @@ public class DocService {
         return list;
     }
 
-    public Page<Doc> list(DocQueryReq req) {
-        DocExample docExample = new DocExample();
-        PageHelper.startPage(req.getPage(), req.getSize());
-        List<Doc> docsList = docMapper.selectByExample(docExample);
-
-        PageInfo<Doc> pageInfo = new PageInfo<>(docsList);
-        Page<Doc> page = new Page<>();
-        page.setTotal(pageInfo.getTotal());
-        page.setList(docsList);
-        return page;
-    }
-
     /**
      * 保存文档
      */
     public void save(Doc doc, Content content) {
         if (ObjectUtils.isEmpty(doc.getId())) {
-            long id = snowFlake.nextId();
-            doc.setId(id); // 雪花算法生成id
-            content.setId(id);
+            // 同时插入的删除保证自增主键一致
             docMapper.insert(doc); // 新增
             contentMapper.insert(content);
         } else {
@@ -92,6 +70,7 @@ public class DocService {
      */
     public void delete(Long id) {
         docMapper.deleteByPrimaryKey(id);
+        contentMapper.deleteByPrimaryKey(id);
     }
 
     /**

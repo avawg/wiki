@@ -8,7 +8,6 @@ import org.wg.wiki.model.entity.EbookExample;
 import org.wg.wiki.model.req.EbookQueryReq;
 import org.wg.wiki.model.resp.Page;
 
-import org.wg.wiki.utils.SnowFlake;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,9 +23,6 @@ public class EbookService {
 
     @Autowired
     private EbookMapper ebookMapper;
-
-    @Autowired
-    SnowFlake snowFlake;
 
     public Page<Ebook> list(EbookQueryReq req) {
         EbookExample ebookExample = new EbookExample();
@@ -57,8 +53,6 @@ public class EbookService {
      */
     public void save(Ebook ebook) {
         if (ObjectUtils.isEmpty(ebook.getId())) {
-            long id = snowFlake.nextId();
-            ebook.setId(id); // 雪花算法生成id
             ebook.setDocCount(0); // default 0 仍需手动设置
             ebook.setViewCount(0);
             ebook.setVoteCount(0);
