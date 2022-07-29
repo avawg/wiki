@@ -36,15 +36,6 @@ public class CategoryController {
     }
 
     /**
-     * 查询分类，支持分页和模糊查询
-     */
-    @GetMapping("/list")
-    public Result list(@Valid CategoryQueryReq req) {
-        Page<Category> page = categoryService.list(req);
-        return Result.success(page);
-    }
-
-    /**
      * 保存分类 新增或更新
      */
     @PostMapping("/save")

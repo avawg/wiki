@@ -8,6 +8,7 @@ import Antd from 'ant-design-vue';
 import 'ant-design-vue/dist/antd.css';
 import * as Icons from '@ant-design/icons-vue';
 import axios from "axios";
+import {Tool} from "@/util/tool";
 
 // axios默认地址
 axios.defaults.baseURL = process.env.VUE_APP_SERVER;
@@ -25,6 +26,11 @@ for (const i in icons) {
 axios.interceptors.request.use(
     function (config) {
         console.log('请求参数：', config);
+        const token = store.state.user.token;
+        if (Tool.isNotEmpty(token)) {
+            config.headers.token = token;
+            console.log("请求header中添加token:", token);
+        }
         return config;
     },
     error => {

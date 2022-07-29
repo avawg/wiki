@@ -38,15 +38,6 @@ public class DocController {
     }
 
     /**
-     * 查询文档，支持分页和模糊查询
-     */
-    @GetMapping("/list")
-    public Result list(@Valid DocQueryReq req) {
-        Page<Doc> page = docService.list(req);
-        return Result.success(page);
-    }
-
-    /**
      * 根据id查询文档内容
      */
     @GetMapping("/content/{id}")
