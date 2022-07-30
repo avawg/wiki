@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.MultipartFile;
+import org.wg.wiki.utils.RequestContext;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -39,6 +40,8 @@ public class LogAspect {
         HttpServletRequest request = attributes.getRequest();
         Signature signature = joinPoint.getSignature();
         String name = signature.getName();
+
+        RequestContext.setRemoteAddress(getRemoteIp(request)); // 将ip放入线程本地变量作为参数传递
 
         // 打印请求信息
         LOG.info("------------- 开始 -------------");
@@ -74,5 +77,22 @@ public class LogAspect {
         LOG.info("返回结果: {}", JSONObject.toJSONString(result, excludeFilter));
         LOG.info("------------- 结束 耗时：{} ms -------------", System.currentTimeMillis() - startTime);
         return result;
+    }
+
+    /**
+     * 使用nginx做反向代理，需要用该方法才能取到真实的远程IP
+     */
+    public String getRemoteIp(HttpServletRequest request) {
+        String ip = request.getHeader("x-forwarded-for");
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getHeader("Proxy-Client-IP");
+        }
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getHeader("WL-Proxy-Client-IP");
+        }
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getRemoteAddr();
+        }
+        return ip;
     }
 }

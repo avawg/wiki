@@ -3,13 +3,17 @@ package org.wg.wiki.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
+import org.wg.wiki.exception.BusinessException;
+import org.wg.wiki.exception.BusinessExceptionCode;
 import org.wg.wiki.mapper.ContentMapper;
 import org.wg.wiki.mapper.DocMapper;
 import org.wg.wiki.model.entity.Content;
 import org.wg.wiki.model.entity.Doc;
 import org.wg.wiki.model.entity.DocExample;
+import org.wg.wiki.utils.RequestContext;
 
 import java.util.List;
 
@@ -23,6 +27,9 @@ public class DocService {
 
     @Autowired
     private ContentMapper contentMapper;
+
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     /**
      * 查询所有数据
@@ -54,19 +61,6 @@ public class DocService {
     }
 
     /**
-     * 根据id查询文档内容
-     */
-    public String getContent(Long id) {
-        Content content = contentMapper.selectByPrimaryKey(id);
-        if (ObjectUtils.isEmpty(content)) {
-            return "";
-        } else {
-            docMapper.updateViewCount(id);
-            return content.getContent();
-        }
-    }
-
-    /**
      * 删除文档
      */
     public void delete(Long id) {
@@ -82,5 +76,31 @@ public class DocService {
         DocExample.Criteria criteria = docExample.createCriteria();
         criteria.andIdIn(ids);
         docMapper.deleteByExample(docExample);
+    }
+
+    /**
+     * 根据id查询文档内容
+     */
+    public String getContent(Long id) {
+        Content content = contentMapper.selectByPrimaryKey(id);
+        if (ObjectUtils.isEmpty(content)) {
+            return "";
+        } else {
+            docMapper.updateViewCount(id);
+            return content.getContent();
+        }
+    }
+
+    /**
+     * 点赞
+     */
+    public void vote(Long id) {
+        String remoteAddress = RequestContext.getRemoteAddress();
+        if (redisTemplate.hasKey(remoteAddress)) {
+            throw new BusinessException(BusinessExceptionCode.REPEAT_VOTE);
+        }
+        // 同一台主机24小时内不能在点赞
+        redisTemplate.opsForValue().set(remoteAddress, 3600 * 24);
+        docMapper.updateVoteCount(id);
     }
 }

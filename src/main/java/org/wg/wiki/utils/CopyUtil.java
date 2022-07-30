@@ -15,15 +15,14 @@ public class CopyUtil {
         if (source == null) {
             return null;
         }
-        T obj = null;
         try {
-            obj = clazz.newInstance();
+            T obj = clazz.newInstance();
+            BeanUtils.copyProperties(source, obj);
+            return obj;
         } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
-        BeanUtils.copyProperties(source, obj);
-        return obj;
     }
 
     /**

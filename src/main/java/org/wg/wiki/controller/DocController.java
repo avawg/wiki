@@ -38,15 +38,6 @@ public class DocController {
     }
 
     /**
-     * 根据id查询文档内容
-     */
-    @GetMapping("/content/{id}")
-    public Result getContent(@PathVariable Long id) {
-        String content = docService.getContent(id);
-        return Result.success(content);
-    }
-
-    /**
      * 保存文档 新增或更新
      */
     @PostMapping("/save")
@@ -65,6 +56,24 @@ public class DocController {
         logger.info("ids: {}", ids);
         List<String> list = Arrays.asList(ids.split(","));
         docService.delete(list);
+        return Result.success();
+    }
+
+    /**
+     * 根据id查询文档内容
+     */
+    @GetMapping("/content/{id}")
+    public Result getContent(@PathVariable Long id) {
+        String content = docService.getContent(id);
+        return Result.success(content);
+    }
+
+    /**
+     * 点赞
+     */
+    @PostMapping("/vote/{id}")
+    public Result vote(@PathVariable Long id) {
+        docService.vote(id);
         return Result.success();
     }
 }
