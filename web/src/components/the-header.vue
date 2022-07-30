@@ -74,7 +74,7 @@ import {computed, defineComponent, ref} from 'vue';
     setup () {
       // 登录用户
       const loginUser = ref({
-        loginName: "wang gang",
+        loginName: "aghhgxhhh",
         password: "Wg296513@"
       });
       const user = computed(() => store.state.user);

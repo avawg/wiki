@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import org.wg.wiki.controller.WebSocketServer;
 import org.wg.wiki.exception.BusinessException;
 import org.wg.wiki.exception.BusinessExceptionCode;
 import org.wg.wiki.mapper.ContentMapper;
@@ -34,6 +35,9 @@ public class DocService {
 
     @Autowired
     private RedisTemplate redisTemplate;
+
+    @Autowired
+    WebSocketServer socketServer;
 
     /**
      * 查询所有数据
@@ -112,5 +116,9 @@ public class DocService {
         // 同一用户24小时内不能在点赞
         redisTemplate.opsForSet().add(key, id, 3600 * 24);
         docMapper.updateVoteCount(id);
+
+        // 推送点赞消息
+        Doc doc = docMapper.selectByPrimaryKey(id);
+        socketServer.sendInfo("【" + doc.getName() + "】被点赞!");
     }
 }
