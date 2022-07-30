@@ -28,5 +28,5 @@ public interface EbookMapper {
 
     int updateByPrimaryKey(Ebook record);
 
-    int updateStatData();
+    int updateDocData();
 }

@@ -11,8 +11,8 @@ import org.wg.wiki.utils.SnowFlake;
 
 // 每天0点定时更新电子书统计数据
 @Component
-public class EbookJob {
-    private static final Logger logger = LoggerFactory.getLogger(EbookJob.class);
+public class DocJob {
+    private static final Logger logger = LoggerFactory.getLogger(DocJob.class);
 
     @Autowired
     private EbookMapper ebookMapper;
@@ -25,7 +25,7 @@ public class EbookJob {
         MDC.put("LOG_ID", String.valueOf(snowFlake.nextId())); // 增加日志流水号
         logger.info("更新电子书的文档数据开始");
         long start = System.currentTimeMillis();
-        ebookMapper.updateStatData();
+        ebookMapper.updateDocData();
         long end = System.currentTimeMillis();
         logger.info("更新电子书的文档数据结束, 耗时: {}毫秒", end - start);
     }

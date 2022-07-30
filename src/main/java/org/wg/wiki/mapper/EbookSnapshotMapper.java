@@ -27,4 +27,6 @@ public interface EbookSnapshotMapper {
     int updateByPrimaryKeySelective(EbookSnapshot record);
 
     int updateByPrimaryKey(EbookSnapshot record);
+
+    void generateSnapshot();
 }
