@@ -11,10 +11,13 @@ import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.MultipartFile;
+import org.wg.wiki.utils.SnowFlake;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -25,6 +28,9 @@ import javax.servlet.http.HttpServletRequest;
 public class LogAspect {
 
     private final static Logger LOG = LoggerFactory.getLogger(LogAspect.class);
+
+    @Autowired
+    private SnowFlake snowFlake;
 
     /**
      * 定义一个切点
@@ -39,6 +45,8 @@ public class LogAspect {
         HttpServletRequest request = attributes.getRequest();
         Signature signature = joinPoint.getSignature();
         String name = signature.getName();
+
+        MDC.put("LOG_ID", String.valueOf(snowFlake.nextId())); // 增加日志流水号
 
         // 打印请求信息
         LOG.info("------------- 开始 -------------");
