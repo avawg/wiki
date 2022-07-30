@@ -88,11 +88,13 @@
       </a-col>
     </a-row>
     <br>
+
     <a-row>
       <a-col :span="24" id="main-col">
         <div id="main" style="width: 100%;height:300px;"></div>
       </a-col>
     </a-row>
+
   </div>
 </template>
 
@@ -113,17 +115,18 @@ export default defineComponent({
       axios.get('/ebook-snapshot/2day-statistic').then((response) => {
         const data = response.data;
         if (data.success) {
-          statistic.value.viewCount = data.data[1].viewCount;
-          statistic.value.voteCount = data.data[1].voteCount;
-          statistic.value.viewIncrease = data.data[1].viewIncrease;
-          statistic.value.voteIncrease = data.data[1].voteIncrease;
+          const list = data.data;
+          statistic.value.viewCount = list[1].viewCount;
+          statistic.value.voteCount = list[1].voteCount;
+          statistic.value.viewIncrease = list[1].viewIncrease;
+          statistic.value.voteIncrease = list[1].voteIncrease;
 
           // 按百分比 预估今日阅读增长，点赞增长
           const now = new Date();
           const rate = (now.getHours() * 60 + now.getMinutes()) / (60 * 24);
-          statistic.value.todayViewIncrease = parseInt(String(data.data[1].viewIncrease / rate));
+          statistic.value.todayViewIncrease = parseInt(String(list[1].viewIncrease / rate));
           // 今日预计增长率
-          statistic.value.todayViewIncreaseRate = (statistic.value.todayViewIncrease - data.data[0].viewIncrease) / data.data[0].viewIncrease * 100;
+          statistic.value.todayViewIncreaseRate = (statistic.value.todayViewIncrease - list[0].viewIncrease) / list[0].viewIncrease * 100;
           statistic.value.todayViewIncreaseRateAbs = Math.abs(statistic.value.todayViewIncreaseRate);
         }
       });
@@ -158,7 +161,7 @@ export default defineComponent({
           trigger: 'axis'
         },
         legend: {
-          data: ['总阅读量', '总点赞量']
+          data: ['日阅读增长', '日点赞增长']
         },
         grid: {
           left: '1%',
@@ -181,14 +184,14 @@ export default defineComponent({
         },
         series: [
           {
-            name: '总阅读量',
+            name: '日阅读增长',
             type: 'line',
             // stack: '总量', 不堆叠
             data: seriesView,
             smooth: true
           },
           {
-            name: '总点赞量',
+            name: '日点赞增长',
             type: 'line',
             // stack: '总量', 不堆叠
             data: seriesVote,
@@ -202,19 +205,18 @@ export default defineComponent({
     };
 
     const get30DayStatistic = () => {
-      axios.get('/ebook-snapshot/get-30-statistic').then((response) => {
+      axios.get('/ebook-snapshot/30day-statistic').then((response) => {
         const data = response.data;
         if (data.success) {
-          const statisticList = data.content;
-
-          init30DayEcharts(statisticList)
+          const list = data.data;
+          init30DayEcharts(list)
         }
       });
     };
 
     onMounted(() => {
       get2dayStatistic();
-      // get30DayStatistic();
+      get30DayStatistic();
     });
 
     return {

@@ -31,4 +31,6 @@ public interface EbookSnapshotMapper {
     void generateSnapshot();
 
     List<EbookSnapshot> get2day();
+
+    List<EbookSnapshot> get30day();
 }

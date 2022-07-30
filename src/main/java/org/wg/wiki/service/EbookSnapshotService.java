@@ -21,4 +21,8 @@ public class EbookSnapshotService {
     public List<EbookSnapshot> get2day() {
         return ebookSnapshotMapper.get2day();
     }
+
+    public List<EbookSnapshot> get30day() {
+        return ebookSnapshotMapper.get30day();
+    }
 }

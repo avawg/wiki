@@ -16,11 +16,20 @@ public class EbookSnapshotController {
     private EbookSnapshotService ebookSnapshotService;
 
     /**
-     * 获取统计数据 昨天，当天 阅读数，点赞数，阅读增长，点赞增长
+     * 获取最近两天统计数据 阅读数，点赞数，阅读增长，点赞增长
      */
     @GetMapping("/2day-statistic")
     public Result get2day() {
         Object list = ebookSnapshotService.get2day();
+        return Result.success(list);
+    }
+
+    /**
+     * 获取统计数据 昨天，当天 阅读数，点赞数，阅读增长，点赞增长
+     */
+    @GetMapping("/30day-statistic")
+    public Result get30day() {
+        Object list = ebookSnapshotService.get30day();
         return Result.success(list);
     }
 }
