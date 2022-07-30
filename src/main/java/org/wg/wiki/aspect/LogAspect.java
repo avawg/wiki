@@ -15,7 +15,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.MultipartFile;
-import org.wg.wiki.utils.RequestContext;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -40,8 +39,6 @@ public class LogAspect {
         HttpServletRequest request = attributes.getRequest();
         Signature signature = joinPoint.getSignature();
         String name = signature.getName();
-
-        RequestContext.setRemoteAddress(getRemoteIp(request)); // 将ip放入线程本地变量作为参数传递
 
         // 打印请求信息
         LOG.info("------------- 开始 -------------");

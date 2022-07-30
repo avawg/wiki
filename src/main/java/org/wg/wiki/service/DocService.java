@@ -1,11 +1,14 @@
 package org.wg.wiki.service;
 
+import com.alibaba.fastjson.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.wg.wiki.exception.BusinessException;
 import org.wg.wiki.exception.BusinessExceptionCode;
 import org.wg.wiki.mapper.ContentMapper;
@@ -13,8 +16,9 @@ import org.wg.wiki.mapper.DocMapper;
 import org.wg.wiki.model.entity.Content;
 import org.wg.wiki.model.entity.Doc;
 import org.wg.wiki.model.entity.DocExample;
-import org.wg.wiki.utils.RequestContext;
+import org.wg.wiki.model.entity.User;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @Service
@@ -95,12 +99,18 @@ public class DocService {
      * 点赞
      */
     public void vote(Long id) {
-        String remoteAddress = RequestContext.getRemoteAddress();
-        if (redisTemplate.hasKey(remoteAddress)) {
+        // 获取登录用户id
+        ServletRequestAttributes servletRequestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        HttpServletRequest request = servletRequestAttributes.getRequest();
+        String token = request.getHeader("token");
+        User user = JSONObject.parseObject((String)redisTemplate.opsForValue().get(token), User.class);
+
+        String key = user.getId().toString();
+        if (redisTemplate.opsForSet().isMember(key, id)) {
             throw new BusinessException(BusinessExceptionCode.REPEAT_VOTE);
         }
-        // 同一台主机24小时内不能在点赞
-        redisTemplate.opsForValue().set(remoteAddress, 3600 * 24);
+        // 同一用户24小时内不能在点赞
+        redisTemplate.opsForSet().add(key, id, 3600 * 24);
         docMapper.updateVoteCount(id);
     }
 }

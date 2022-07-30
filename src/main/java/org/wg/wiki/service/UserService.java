@@ -20,6 +20,7 @@ import org.wg.wiki.model.entity.UserExample;
 import org.wg.wiki.model.req.UserQueryReq;
 import org.wg.wiki.model.resp.Page;
 import org.wg.wiki.model.resp.UserLoginResp;
+import org.wg.wiki.utils.CopyUtil;
 import org.wg.wiki.utils.SnowFlake;
 
 import java.nio.charset.StandardCharsets;
@@ -75,8 +76,9 @@ public class UserService {
             Long token = snowFlake.nextId();
             logger.info("生成单点登录token: {}，并放入redis中", token);
             UserLoginResp userLoginResp = copy(userDB, UserLoginResp.class);
+            User user = CopyUtil.copy(userLoginResp, User.class);
             userLoginResp.setToken(token.toString());
-            redisTemplate.opsForValue().set(token.toString(), JSONObject.toJSONString(userLoginResp), 3600 * 24, TimeUnit.SECONDS);
+            redisTemplate.opsForValue().set(token.toString(), JSONObject.toJSONString(user), 3600 * 24, TimeUnit.SECONDS);
             return userLoginResp;
         }
         logger.info("密码错误，输入密码 {}，数据库密码{}", loginUser.getPassword(), userDB.getPassword());
