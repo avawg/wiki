@@ -1,5 +1,7 @@
 package org.wg.wiki.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import java.util.Date;
 
 public class EbookSnapshot {
@@ -7,6 +9,7 @@ public class EbookSnapshot {
 
     private Long ebookId;
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
     private Date date;
 
     private Integer viewCount;

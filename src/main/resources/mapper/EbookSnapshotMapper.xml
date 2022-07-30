@@ -261,4 +261,13 @@
           t1.vote_increase = t1.vote_count - ifnull(t2.vote_count, 0)
     where t1.date = curdate();
   </update>
+
+  <select id="get2day" resultMap="BaseResultMap">
+    select `date`, sum(view_count) as view_count, sum(vote_count) as vote_count,
+        sum(view_increase) as view_increase, sum(vote_increase) as vote_increase
+    from t_ebook_snapshot
+    where `date` >= date_sub(current_date, interval 1 day)
+    group by `date`
+    order by `date` asc
+  </select>
 </mapper>

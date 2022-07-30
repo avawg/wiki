@@ -131,12 +131,8 @@ export default defineComponent({
         const data = response.data;
         if (data.success) {
           level1.value = Tool.array2Tree(data.data, 0);
-          treeSelectData.value = Tool.copy(level1.value);
-          if (Tool.isNotEmpty(treeSelectData.value)) {
-            treeSelectData.value.unshift({"id": 0, "name": '无'});
-          } else {
-            treeSelectData.value = [{"id": 0, "name": '无'}]
-          }
+          treeSelectData.value = Tool.copy(level1.value) || [];
+          treeSelectData.value.unshift({"id": 0, "name": '无'});
         } else {
           message.error(data.message);
         }
@@ -221,11 +217,8 @@ export default defineComponent({
       treeSelectData.value = Tool.copy(level1.value);
       // 父文档不能选择当前节点及其子节点
       setDisable(treeSelectData.value, record.id);
-      if (Tool.isNotEmpty(treeSelectData.value)) {
-        treeSelectData.value.unshift({"id": 0, "name": '无'});
-      } else {
-        treeSelectData.value = {"id": 0, "name": '无'};
-      }
+      treeSelectData.value = Tool.copy(level1.value) || [];
+      treeSelectData.value.unshift({"id": 0, "name": '无'});
       handleQueryContent(record.id);
     };
     /**
@@ -235,12 +228,8 @@ export default defineComponent({
       editor.txt.html("");
       console.log(route.query.ebookId);
       doc.value = {ebookId: route.query.ebookId};
-      treeSelectData.value = Tool.copy(level1.value);
-      if (Tool.isNotEmpty(treeSelectData.value)) {
-        treeSelectData.value.unshift({"id": 0, "name": '无'});
-      } else {
-        treeSelectData.value = {"id": 0, "name": '无'};
-      }
+      treeSelectData.value = Tool.copy(level1.value) || [];
+      treeSelectData.value.unshift({"id": 0, "name": '无'});
     };
     /**
      * 保存文档

@@ -29,7 +29,7 @@
           :style="{ background: '#fff', padding: '24px', margin: 0, minHeight: '280px' }"
       >
         <div class="welcome" v-show="showWelcome">
-          <h1>欢迎进入知识库</h1>
+          <the-statistic></the-statistic>
         </div>
         <!-- 列表组件 -->
         <a-list v-show="!showWelcome" item-layout="vertical" size="large" :grid="{ gutter: 20, column: 3}" :data-source="ebooks">
@@ -68,12 +68,15 @@
   import axios from "axios";
   import {message} from 'ant-design-vue';
   import {Tool} from '@/util/tool';
+  import TheStatistic from "@/components/the-statistic.vue";
 
   export default defineComponent({
     name: 'Home',
+    components: {
+      TheStatistic
+    },
 
     setup() {
-
       const level1 = ref();
       const handleQueryCategory = () => {
         axios.get("/category/all").then((response) => {

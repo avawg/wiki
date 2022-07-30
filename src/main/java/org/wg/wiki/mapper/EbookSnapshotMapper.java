@@ -29,4 +29,6 @@ public interface EbookSnapshotMapper {
     int updateByPrimaryKey(EbookSnapshot record);
 
     void generateSnapshot();
+
+    List<EbookSnapshot> get2day();
 }
