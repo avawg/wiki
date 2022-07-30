@@ -42,8 +42,8 @@ public class DocService {
     public void save(Doc doc, Content content) {
         if (ObjectUtils.isEmpty(doc.getId())) {
             // 同时插入的删除保证自增主键一致
-            docMapper.insert(doc); // 新增
-            contentMapper.insert(content);
+            docMapper.insertSelective(doc); // 新增
+            contentMapper.insertSelective(content);
         } else {
             docMapper.updateByPrimaryKey(doc); // 更新
             int update = contentMapper.updateByPrimaryKeyWithBLOBs(content); // 包含大字段更新
@@ -61,6 +61,7 @@ public class DocService {
         if (ObjectUtils.isEmpty(content)) {
             return "";
         } else {
+            docMapper.updateViewCount(id);
             return content.getContent();
         }
     }

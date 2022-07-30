@@ -240,4 +240,9 @@
       vote_count = #{voteCount,jdbcType=INTEGER}
     where id = #{id,jdbcType=BIGINT}
   </update>
+  
+  <update id="updateViewCount">
+    update t_doc set view_count = view_count + 1
+    where id = #{id};
+  </update>
 </mapper>

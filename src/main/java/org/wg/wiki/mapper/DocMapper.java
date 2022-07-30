@@ -27,4 +27,6 @@ public interface DocMapper {
     int updateByPrimaryKeySelective(Doc record);
 
     int updateByPrimaryKey(Doc record);
+
+    int updateViewCount(Long id);
 }
