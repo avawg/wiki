@@ -117,11 +117,11 @@ public class DocService {
         User user = JSONObject.parseObject((String)redisTemplate.opsForValue().get(token), User.class);
 
         String userId = user.getId().toString();
-        if (redisTemplate.opsForSet().isMember(userId, docId)) {
+        if (redisTemplate.opsForSet().isMember(docId, userId)) {
             throw new BusinessException(BusinessExceptionCode.REPEAT_VOTE);
         }
         // 同一用户24小时内不能在点赞
-        redisTemplate.opsForSet().add(userId, docId, 3600 * 24);
+        redisTemplate.opsForSet().add(docId, userId, 3600 * 24);
         docMapper.updateVoteCount(docId);
 
         Doc doc = docMapper.selectByPrimaryKey(docId);
