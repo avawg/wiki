@@ -16,9 +16,9 @@ public class WebSocketServer {
 
     private static final Logger logger = LoggerFactory.getLogger(WebSocketServer.class);
 
-    private String token = ""; // 每个客户端一个token
-
     private static HashMap<String, Session> map = new HashMap<>();
+
+    private String token = ""; // 每个客户端一个token
 
     /**
      * 连接成功
@@ -61,6 +61,23 @@ public class WebSocketServer {
     public void sendMessage(String message) {
         for (String token : map.keySet()) {
             Session session = map.get(token);
+            try {
+                session.getBasicRemote().sendText(message);
+            } catch (IOException e) {
+                logger.error("推送消息失败：{}，内容：{}", token, message);
+            }
+            logger.info("推送消息：{}，内容：{}", token, message);
+        }
+    }
+
+    /**
+     * 给指定用户发消息
+     */
+    public void sendMessageToPerson(String message, String token) {
+        Session session = map.get(token);
+        if (session == null) {
+            sendMessageToPerson("对方不在线", this.token);
+        } else {
             try {
                 session.getBasicRemote().sendText(message);
             } catch (IOException e) {
