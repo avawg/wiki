@@ -78,6 +78,7 @@ export default defineComponent({
         const data = response.data;
         if (data.success) {
           html.value = data.data;
+          doc.value.viewCount++;
         } else {
           message.error(data.message);
         }
@@ -89,8 +90,8 @@ export default defineComponent({
 
     const onSelect = (selectedKeys: any, info: any) => {
       if (Tool.isNotEmpty(selectedKeys[0])) {
-        handleQueryContent(selectedKeys[0]);
         doc.value = info.selectedNodes[0].props;
+        handleQueryContent(selectedKeys[0]);
       }
     }
 
@@ -121,7 +122,6 @@ export default defineComponent({
   }
 });
 </script>
-
 
 <style>
   /* 全局 */

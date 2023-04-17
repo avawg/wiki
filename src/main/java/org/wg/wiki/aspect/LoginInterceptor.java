@@ -30,7 +30,7 @@ public class LoginInterceptor implements HandlerInterceptor {
         logger.info("------------- LoginInterceptor 开始 -------------");
         // OPTIONS请求不做校验,
         // 前后端分离的架构, 前端会发一个OPTIONS请求先做预检, 对预检请求不做校验
-        if(request.getMethod().toUpperCase().equals("OPTIONS")){
+        if (request.getMethod().toUpperCase().equals("OPTIONS")) {
             return true;
         }
         String path = request.getRequestURL().toString();
@@ -51,7 +51,6 @@ public class LoginInterceptor implements HandlerInterceptor {
             return false;
         } else {
             logger.info("已登录：{}", user);
-            // LoginUserContext.setUser(JSON.parseObject((String) object, UserLoginResp.class));
             return true;
         }
     }
